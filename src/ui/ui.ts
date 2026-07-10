@@ -9,6 +9,13 @@ import { drawCrewPortrait } from '../render/sprites';
 
 const WAVES_PER_AREA = 10;
 
+const UPGRADE_ICON_LABELS: Record<string, string> = {
+  weapons: 'ATK',
+  shields: 'SPD',
+  scanner: 'CR',
+  training: 'XP',
+};
+
 function formatNumber(value: number): string {
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(2)}M`;
   if (value >= 10_000) return `${(value / 1_000).toFixed(1)}K`;
@@ -97,9 +104,10 @@ export class UIManager {
     }
 
     this.upgradeList.innerHTML = UPGRADE_TEMPLATES.map((upgrade) => {
+      const iconLabel = UPGRADE_ICON_LABELS[upgrade.id] ?? 'UP';
       return `
         <article class="upgrade-card">
-          <div class="upgrade-icon" aria-hidden="true"></div>
+          <div class="upgrade-icon" aria-hidden="true">${iconLabel}</div>
           <div>
             <p class="upgrade-name">${upgrade.name}</p>
             <p class="upgrade-desc">${upgrade.description}</p>

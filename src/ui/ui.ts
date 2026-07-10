@@ -35,6 +35,13 @@ const CREW_STATIONS: Record<string, string> = {
   lyra: 'Suporte',
 };
 
+const BRIDGE_STATION_LAYOUT: Record<string, string> = {
+  nova: 'captain',
+  vex: 'weapons',
+  aria: 'engineering',
+  lyra: 'support',
+};
+
 const SKILL_EFFECT_LABELS: Record<string, string> = {
   ship_hull: 'Casco maximo',
   ship_shield: 'Escudo maximo',
@@ -98,6 +105,18 @@ export class UIManager {
   private commandToggle = document.getElementById('command-toggle') as HTMLButtonElement;
   private commandOverlay = document.getElementById('command-overlay')!;
   private commandClose = document.getElementById('command-close') as HTMLButtonElement;
+  private bridgeToggle = document.getElementById('bridge-toggle') as HTMLButtonElement;
+  private bridgeOverlay = document.getElementById('bridge-overlay')!;
+  private bridgeClose = document.getElementById('bridge-close') as HTMLButtonElement;
+  private bridgeZone = document.getElementById('bridge-zone')!;
+  private bridgeEnemy = document.getElementById('bridge-enemy')!;
+  private bridgeHull = document.getElementById('bridge-hull')!;
+  private bridgeShield = document.getElementById('bridge-shield')!;
+  private bridgeDps = document.getElementById('bridge-dps')!;
+  private bridgeHullBar = document.getElementById('bridge-hull-bar')!;
+  private bridgeShieldBar = document.getElementById('bridge-shield-bar')!;
+  private bridgeWeaponBar = document.getElementById('bridge-weapon-bar')!;
+  private bridgeStations = document.getElementById('bridge-stations')!;
   private storeToggle = document.getElementById('store-toggle') as HTMLButtonElement;
   private storeOverlay = document.getElementById('store-overlay')!;
   private storeClose = document.getElementById('store-close') as HTMLButtonElement;
@@ -131,6 +150,11 @@ export class UIManager {
     private onReset: () => void,
   ) {
     this.prestigeBtn.addEventListener('click', () => this.onPrestige());
+    this.bridgeToggle.addEventListener('click', () => this.openBridgeOverlay());
+    this.bridgeClose.addEventListener('click', () => this.closeBridgeOverlay());
+    this.bridgeOverlay.addEventListener('click', (event) => {
+      if (event.target === this.bridgeOverlay) this.closeBridgeOverlay();
+    });
     this.storeToggle.addEventListener('click', () => this.openStoreOverlay());
     this.storeClose.addEventListener('click', () => this.closeStoreOverlay());
     this.storeOverlay.addEventListener('click', (event) => {
@@ -154,6 +178,7 @@ export class UIManager {
     window.addEventListener('keydown', (event) => {
       if (event.key !== 'Escape') return;
       this.closeHeroOverlay();
+      this.closeBridgeOverlay();
       this.closeStoreOverlay();
       this.closeCommandOverlay();
     });
@@ -162,6 +187,7 @@ export class UIManager {
     this.buildStaticLists();
     this.buildZoneRoute();
     this.buildStoreList();
+    this.buildBridgeStations();
   }
 
   private buildStaticLists(): void {
@@ -265,6 +291,42 @@ export class UIManager {
     });
   }
 
+  private buildBridgeStations(): void {
+    this.bridgeStations.innerHTML = HERO_TEMPLATES.map((hero) => `
+      <button class="bridge-station ${BRIDGE_STATION_LAYOUT[hero.id] ?? ''}" data-bridge-hero="${hero.id}">
+        <span class="station-light" aria-hidden="true"></span>
+        <canvas class="bridge-portrait" width="64" height="64" data-bridge-canvas="${hero.id}"></canvas>
+        <span class="station-body">
+          <span class="station-label">${CREW_STATIONS[hero.id] ?? hero.roleLabel}</span>
+          <strong>${hero.name}</strong>
+          <span class="station-meta">
+            Nv. <span data-bridge-level="${hero.id}">1</span>
+            <span data-bridge-alert="${hero.id}" class="station-alert hidden">PH</span>
+          </span>
+          <span class="station-xp">
+            <span data-bridge-xp="${hero.id}"></span>
+          </span>
+        </span>
+      </button>
+    `).join('');
+
+    for (const hero of HERO_TEMPLATES) {
+      const canvas = this.bridgeStations.querySelector<HTMLCanvasElement>(
+        `[data-bridge-canvas="${hero.id}"]`,
+      );
+      if (!canvas) continue;
+      const ctx = canvas.getContext('2d');
+      if (ctx) drawCrewPortrait(ctx, hero.color, hero.accent, hero.role);
+    }
+
+    this.bridgeStations.querySelectorAll<HTMLButtonElement>('[data-bridge-hero]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const heroId = btn.dataset.bridgeHero;
+        if (heroId) this.openHeroOverlay(heroId);
+      });
+    });
+  }
+
   update(state: GameState): void {
     this.currentState = state;
     const zone = getZone(state.combat.zoneId);
@@ -328,6 +390,7 @@ export class UIManager {
     this.lastSave.textContent = formatRelativeSaveTime(state.lastSave);
     this.updateHeroOverlay();
     this.updateStoreOverlay();
+    this.updateBridgeOverlay();
   }
 
   setStatus(message: string): void {
@@ -358,6 +421,17 @@ export class UIManager {
   private closeCommandOverlay(): void {
     this.commandOverlay.classList.add('hidden');
     this.commandOverlay.setAttribute('aria-hidden', 'true');
+  }
+
+  private openBridgeOverlay(): void {
+    this.bridgeOverlay.classList.remove('hidden');
+    this.bridgeOverlay.setAttribute('aria-hidden', 'false');
+    this.updateBridgeOverlay();
+  }
+
+  private closeBridgeOverlay(): void {
+    this.bridgeOverlay.classList.add('hidden');
+    this.bridgeOverlay.setAttribute('aria-hidden', 'true');
   }
 
   private openStoreOverlay(): void {
@@ -488,6 +562,46 @@ export class UIManager {
       btn.disabled = isCosmeticOwned;
       btn.textContent = isCosmeticOwned ? 'Obtido' : 'Ativar';
     });
+  }
+
+  private updateBridgeOverlay(): void {
+    if (!this.currentState || this.bridgeOverlay.classList.contains('hidden')) return;
+
+    const state = this.currentState;
+    const zone = getZone(state.combat.zoneId);
+    const hullPercent = (state.ship.hull / state.ship.maxHull) * 100;
+    const shieldPercent = (state.ship.shield / state.ship.maxShield) * 100;
+    const weaponReadiness = Math.min(
+      100,
+      (state.ship.weaponTimer / getShipWeaponInterval(state)) * 100,
+    );
+
+    this.bridgeZone.textContent = zone.name;
+    this.bridgeEnemy.textContent = state.combat.isBoss ? `BOSS: ${state.combat.enemyName}` : state.combat.enemyName;
+    this.bridgeHull.textContent = `${formatNumber(state.ship.hull)} / ${formatNumber(state.ship.maxHull)}`;
+    this.bridgeShield.textContent = `${formatNumber(state.ship.shield)} / ${formatNumber(state.ship.maxShield)}`;
+    this.bridgeDps.textContent = formatNumber(getFleetDps(state));
+    this.bridgeHullBar.style.width = `${Math.max(0, hullPercent)}%`;
+    this.bridgeShieldBar.style.width = `${Math.max(0, shieldPercent)}%`;
+    this.bridgeWeaponBar.style.width = `${weaponReadiness}%`;
+
+    for (const hero of state.heroes) {
+      const levelEl = this.bridgeStations.querySelector(`[data-bridge-level="${hero.id}"]`);
+      const xpEl = this.bridgeStations.querySelector(`[data-bridge-xp="${hero.id}"]`);
+      const alertEl = this.bridgeStations.querySelector<HTMLElement>(`[data-bridge-alert="${hero.id}"]`);
+      const stationEl = this.bridgeStations.querySelector<HTMLElement>(`[data-bridge-hero="${hero.id}"]`);
+      const nextLevelXp = xpToLevel(hero.level);
+      const hasAvailableSkill = getOfficerSkills(hero.id).some((skill) => {
+        return !hero.unlockedSkills.includes(skill.id)
+          && hero.level >= skill.requiredLevel
+          && hero.skillPoints >= skill.cost;
+      });
+
+      if (levelEl) levelEl.textContent = String(hero.level);
+      if (xpEl) xpEl.textContent = `XP ${formatNumber(hero.xp)} / ${formatNumber(nextLevelXp)}`;
+      if (alertEl) alertEl.classList.toggle('hidden', !hasAvailableSkill);
+      if (stationEl) stationEl.classList.toggle('has-upgrade', hasAvailableSkill);
+    }
   }
 
   private getStoreCategoryLabel(category: string): string {

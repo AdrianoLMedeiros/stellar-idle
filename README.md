@@ -22,6 +22,7 @@ Idle RPG sci-fi para navegador com combate automático entre uma nave expedicion
 
 ## Interface
 
+- **Ponte da Nave**: visão da sala de comando com os oficiais em suas estações, leitura do setor, ameaça atual e sistemas principais.
 - **Comando**: overlay com dados da campanha, salvar e resetar.
 - **Tripulação**: cada oficial tem um overlay com XP, pontos, contribuição e habilidades.
 - **Suprimentos**: overlay de loja dev; não processa pagamento real.

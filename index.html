@@ -20,6 +20,7 @@
           <h1>Stellar Idle RPG</h1>
         </div>
         <div class="top-actions">
+          <button id="bridge-toggle" class="btn secondary command-toggle">Ponte</button>
           <button id="store-toggle" class="btn secondary command-toggle">Suprimentos</button>
           <button id="command-toggle" class="btn secondary command-toggle">Comando</button>
         </div>
@@ -217,6 +218,51 @@
             </div>
             <div id="active-boost-list" class="active-boost-list"></div>
             <div id="store-list" class="store-list"></div>
+          </div>
+        </section>
+      </div>
+
+      <div id="bridge-overlay" class="bridge-overlay hidden" aria-hidden="true">
+        <section class="panel bridge-dialog" role="dialog" aria-modal="true" aria-labelledby="bridge-title">
+          <div class="panel-header bridge-dialog-header">
+            <div>
+              <h2 id="bridge-title">Ponte da Nave</h2>
+              <p id="bridge-subtitle">Estações de comando e leitura tática da tripulação</p>
+            </div>
+            <button id="bridge-close" class="btn secondary">Fechar</button>
+          </div>
+          <div class="bridge-body">
+            <div class="bridge-window">
+              <div class="bridge-stars" aria-hidden="true"></div>
+              <div class="bridge-window-data">
+                <span class="muted">Setor atual</span>
+                <strong id="bridge-zone">Setor Desconhecido</strong>
+              </div>
+              <div class="bridge-window-data">
+                <span class="muted">Ameaça</span>
+                <strong id="bridge-enemy">—</strong>
+              </div>
+            </div>
+
+            <div class="bridge-systems">
+              <div>
+                <span class="muted">Casco</span>
+                <strong id="bridge-hull">0 / 0</strong>
+                <div class="bridge-system-bar hull"><div id="bridge-hull-bar"></div></div>
+              </div>
+              <div>
+                <span class="muted">Escudo</span>
+                <strong id="bridge-shield">0 / 0</strong>
+                <div class="bridge-system-bar shield"><div id="bridge-shield-bar"></div></div>
+              </div>
+              <div>
+                <span class="muted">DPS</span>
+                <strong id="bridge-dps">0</strong>
+                <div class="bridge-system-bar weapon"><div id="bridge-weapon-bar"></div></div>
+              </div>
+            </div>
+
+            <div id="bridge-stations" class="bridge-stations"></div>
           </div>
         </section>
       </div>

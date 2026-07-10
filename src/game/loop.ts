@@ -1,5 +1,5 @@
 import { applyOfflineProgress, processCombatTick } from './combat';
-import { buyUpgrade } from './progression';
+import { buyUpgrade, unlockSkill } from './progression';
 import { performPrestige } from './prestige';
 import { loadGame, saveGame } from './save';
 import { createInitialState } from './state';
@@ -79,6 +79,12 @@ export class GameLoop {
     const gain = performPrestige(this.state);
     saveGame(this.state);
     return gain;
+  }
+
+  tryUnlockSkill(heroId: string, skillId: string): boolean {
+    const ok = unlockSkill(this.state, heroId, skillId);
+    if (ok) saveGame(this.state);
+    return ok;
   }
 
   saveNow(): void {

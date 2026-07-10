@@ -26,6 +26,13 @@ const ui = new UIManager(
       ui.setStatus('Créditos insuficientes para esta melhoria.');
     }
   },
+  (heroId, skillId) => {
+    if (loop.tryUnlockSkill(heroId, skillId)) {
+      ui.setStatus('Habilidade de oficial desbloqueada.');
+    } else {
+      ui.setStatus('Habilidade indisponível para este oficial.');
+    }
+  },
   () => {
     const gain = loop.tryPrestige();
     if (gain) {

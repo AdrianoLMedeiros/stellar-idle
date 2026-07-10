@@ -16,6 +16,32 @@ export interface HeroState {
   id: string;
   level: number;
   xp: number;
+  skillPoints: number;
+  unlockedSkills: string[];
+}
+
+export type SkillEffectType =
+  | 'ship_hull'
+  | 'ship_shield'
+  | 'shield_regen'
+  | 'weapon_damage'
+  | 'weapon_speed'
+  | 'xp_gain'
+  | 'credit_gain';
+
+export interface SkillEffect {
+  type: SkillEffectType;
+  value: number;
+}
+
+export interface OfficerSkill {
+  id: string;
+  officerId: string;
+  name: string;
+  description: string;
+  requiredLevel: number;
+  cost: number;
+  effects: SkillEffect[];
 }
 
 export interface ShipState {

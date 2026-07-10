@@ -472,6 +472,36 @@ body {
   transition: width 0.18s ease;
 }
 
+.skill-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.skill-chip {
+  min-height: 26px;
+  padding: 5px 8px;
+  border: 1px solid rgba(61, 232, 255, 0.25);
+  border-radius: 8px;
+  background: rgba(61, 232, 255, 0.08);
+  color: var(--cyan);
+  font: 600 0.68rem var(--font-display);
+  cursor: pointer;
+}
+
+.skill-chip:disabled {
+  cursor: not-allowed;
+  opacity: 0.46;
+}
+
+.skill-chip.unlocked {
+  color: var(--success);
+  border-color: rgba(92, 255, 177, 0.35);
+  background: rgba(92, 255, 177, 0.08);
+  opacity: 1;
+}
+
 .btn {
   border: none;
   border-radius: 10px;

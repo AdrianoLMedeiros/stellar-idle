@@ -17,6 +17,8 @@ export function createInitialHeroes(): HeroState[] {
     id: hero.id,
     level: 1,
     xp: 0,
+    skillPoints: 0,
+    unlockedSkills: [],
   }));
 }
 

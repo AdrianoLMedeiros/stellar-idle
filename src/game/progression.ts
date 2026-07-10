@@ -1,3 +1,4 @@
+import { getSkill, getSkillEffectMultiplier } from '../data/skills';
 import { getUpgradeTemplate } from '../data/upgrades';
 import { getZone } from '../data/zones';
 import { BASE_SHIP_HULL, BASE_SHIP_SHIELD, getPrestigeMultiplier } from './state';
@@ -18,7 +19,8 @@ export function getShipMaxHull(state: GameState): number {
   const engineer = state.heroes.find((hero) => hero.id === 'aria');
   const engineerBonus = engineer ? (engineer.level - 1) * 5 : 0;
   const prestige = getPrestigeMultiplier(state);
-  return Math.floor((BASE_SHIP_HULL + captainBonus + engineerBonus) * prestige);
+  const skillMultiplier = getSkillEffectMultiplier(state, 'ship_hull');
+  return Math.floor((BASE_SHIP_HULL + captainBonus + engineerBonus) * prestige * skillMultiplier);
 }
 
 export function getShipMaxShield(state: GameState): number {
@@ -27,14 +29,16 @@ export function getShipMaxShield(state: GameState): number {
   const engineerBonus = engineer ? (engineer.level - 1) * 7 : 0;
   const upgradeBonus = shieldLevel * 14;
   const prestige = getPrestigeMultiplier(state);
-  return Math.floor((BASE_SHIP_SHIELD + engineerBonus + upgradeBonus) * prestige);
+  const skillMultiplier = getSkillEffectMultiplier(state, 'ship_shield');
+  return Math.floor((BASE_SHIP_SHIELD + engineerBonus + upgradeBonus) * prestige * skillMultiplier);
 }
 
 export function getShipShieldRegen(state: GameState): number {
   const shieldLevel = getUpgradeLevel(state, 'shields');
   const support = state.heroes.find((hero) => hero.id === 'lyra');
   const supportBonus = support ? (support.level - 1) * 0.08 : 0;
-  return 1.2 + shieldLevel * 0.18 + supportBonus;
+  const skillMultiplier = getSkillEffectMultiplier(state, 'shield_regen');
+  return (1.2 + shieldLevel * 0.18 + supportBonus) * skillMultiplier;
 }
 
 export function getShipWeaponDamage(state: GameState): number {
@@ -44,7 +48,8 @@ export function getShipWeaponDamage(state: GameState): number {
   const captain = state.heroes.find((hero) => hero.id === 'nova');
   const commandBonus = captain ? 1 + (captain.level - 1) * 0.02 : 1;
   const prestige = getPrestigeMultiplier(state);
-  return Math.floor((18 + weaponLevel * 4 + (gunnerLevel - 1) * 3) * commandBonus * prestige);
+  const skillMultiplier = getSkillEffectMultiplier(state, 'weapon_damage');
+  return Math.floor((18 + weaponLevel * 4 + (gunnerLevel - 1) * 3) * commandBonus * prestige * skillMultiplier);
 }
 
 export function getShipWeaponInterval(state: GameState): number {
@@ -52,7 +57,8 @@ export function getShipWeaponInterval(state: GameState): number {
   const gunnerBonus = gunner ? (gunner.level - 1) * 0.015 : 0;
   const trainingLevel = getUpgradeLevel(state, 'training');
   const tacticalBonus = trainingLevel * 0.01;
-  return Math.max(0.55, 1.35 * (1 - gunnerBonus - tacticalBonus));
+  const skillSpeedBonus = getSkillEffectMultiplier(state, 'weapon_speed') - 1;
+  return Math.max(0.55, 1.35 * (1 - gunnerBonus - tacticalBonus - skillSpeedBonus));
 }
 
 export function getFleetDps(state: GameState): number {
@@ -66,7 +72,8 @@ export function getCreditReward(state: GameState): number {
   const prestige = getPrestigeMultiplier(state);
   const waveBonus = 1 + (state.combat.wave - 1) * 0.05;
   const bossBonus = state.combat.isBoss ? 3 : 1;
-  return Math.floor(12 * zone.creditMultiplier * scannerBonus * prestige * waveBonus * bossBonus);
+  const skillMultiplier = getSkillEffectMultiplier(state, 'credit_gain');
+  return Math.floor(12 * zone.creditMultiplier * scannerBonus * prestige * waveBonus * bossBonus * skillMultiplier);
 }
 
 export function getXpReward(state: GameState): number {
@@ -74,7 +81,8 @@ export function getXpReward(state: GameState): number {
   const trainingBonus = 1 + getUpgradeTemplate('training').effectPerLevel * trainingLevel;
   const prestige = getPrestigeMultiplier(state);
   const bossBonus = state.combat.isBoss ? 3 : 1;
-  return Math.floor(8 * trainingBonus * prestige * bossBonus);
+  const skillMultiplier = getSkillEffectMultiplier(state, 'xp_gain');
+  return Math.floor(8 * trainingBonus * prestige * bossBonus * skillMultiplier);
 }
 
 export function xpToLevel(level: number): number {
@@ -91,10 +99,32 @@ export function addHeroXp(state: GameState, heroId: string, amount: number): voi
     if (hero.xp >= needed) {
       hero.xp -= needed;
       hero.level += 1;
+      hero.skillPoints += 1;
     } else {
       break;
     }
   }
+}
+
+export function canUnlockSkill(state: GameState, heroId: string, skillId: string): boolean {
+  const hero = state.heroes.find((candidate) => candidate.id === heroId);
+  if (!hero) return false;
+  if (hero.unlockedSkills.includes(skillId)) return false;
+
+  const skill = getSkill(skillId);
+  return skill.officerId === heroId && hero.level >= skill.requiredLevel && hero.skillPoints >= skill.cost;
+}
+
+export function unlockSkill(state: GameState, heroId: string, skillId: string): boolean {
+  if (!canUnlockSkill(state, heroId, skillId)) return false;
+
+  const hero = state.heroes.find((candidate) => candidate.id === heroId);
+  const skill = getSkill(skillId);
+  if (!hero) return false;
+
+  hero.skillPoints -= skill.cost;
+  hero.unlockedSkills.push(skill.id);
+  return true;
 }
 
 export function distributeXp(state: GameState, amount: number): void {

@@ -1,4 +1,5 @@
 import { HERO_TEMPLATES } from '../data/heroes';
+import { getOfficerSkills } from '../data/skills';
 import { UPGRADE_TEMPLATES } from '../data/upgrades';
 import { ZONES, getZone } from '../data/zones';
 import {
@@ -83,6 +84,7 @@ export class UIManager {
 
   constructor(
     private onUpgrade: (id: string) => void,
+    private onUnlockSkill: (heroId: string, skillId: string) => void,
     private onPrestige: () => void,
     private onSave: () => void,
     private onReset: () => void,
@@ -116,6 +118,9 @@ export class UIManager {
               <div class="crew-xp-bar">
                 <div data-hero-xp-bar="${hero.id}"></div>
               </div>
+            </div>
+            <div class="skill-list" data-skill-list="${hero.id}">
+              ${this.renderSkillButtons(hero.id)}
             </div>
           </div>
           <div class="crew-meta">
@@ -159,6 +164,24 @@ export class UIManager {
         if (id) this.onUpgrade(id);
       });
     });
+
+    this.crewList.querySelectorAll<HTMLButtonElement>('[data-skill]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const heroId = btn.dataset.hero;
+        const skillId = btn.dataset.skill;
+        if (heroId && skillId) this.onUnlockSkill(heroId, skillId);
+      });
+    });
+  }
+
+  private renderSkillButtons(heroId: string): string {
+    return getOfficerSkills(heroId).map((skill) => {
+      return `
+        <button class="skill-chip" data-hero="${heroId}" data-skill="${skill.id}" title="${skill.description}">
+          ${skill.name}
+        </button>
+      `;
+    }).join('');
   }
 
   private buildZoneRoute(): void {
@@ -193,10 +216,14 @@ export class UIManager {
       const levelEl = this.crewList.querySelector(`[data-hero-level="${hero.id}"]`);
       const xpLabelEl = this.crewList.querySelector(`[data-hero-xp-label="${hero.id}"]`);
       const xpBarEl = this.crewList.querySelector<HTMLElement>(`[data-hero-xp-bar="${hero.id}"]`);
+      const skillListEl = this.crewList.querySelector<HTMLElement>(`[data-skill-list="${hero.id}"]`);
       const nextLevelXp = xpToLevel(hero.level);
       if (levelEl) levelEl.textContent = String(hero.level);
-      if (xpLabelEl) xpLabelEl.textContent = `XP ${formatNumber(hero.xp)} / ${formatNumber(nextLevelXp)}`;
+      if (xpLabelEl) {
+        xpLabelEl.textContent = `XP ${formatNumber(hero.xp)} / ${formatNumber(nextLevelXp)} • PH ${hero.skillPoints}`;
+      }
       if (xpBarEl) xpBarEl.style.width = `${Math.min(100, (hero.xp / nextLevelXp) * 100)}%`;
+      if (skillListEl) this.updateSkillButtons(skillListEl, hero);
     }
 
     for (const upgrade of UPGRADE_TEMPLATES) {
@@ -279,5 +306,22 @@ export class UIManager {
     this.shipDamage.textContent = formatNumber(getShipWeaponDamage(state));
     this.shipInterval.textContent = `${getShipWeaponInterval(state).toFixed(2)}s`;
     this.shipRegen.textContent = `${getShipShieldRegen(state).toFixed(1)}/s`;
+  }
+
+  private updateSkillButtons(container: HTMLElement, hero: GameState['heroes'][number]): void {
+    container.querySelectorAll<HTMLButtonElement>('[data-skill]').forEach((btn) => {
+      const skillId = btn.dataset.skill;
+      const skill = getOfficerSkills(hero.id).find((candidate) => candidate.id === skillId);
+      if (!skill) return;
+
+      const unlocked = hero.unlockedSkills.includes(skill.id);
+      const available = hero.level >= skill.requiredLevel && hero.skillPoints >= skill.cost;
+      btn.disabled = unlocked || !available;
+      btn.classList.toggle('unlocked', unlocked);
+      btn.textContent = unlocked ? `${skill.name} ✓` : skill.name;
+      btn.title = unlocked
+        ? `${skill.description} Desbloqueada.`
+        : `${skill.description} Requer Nv. ${skill.requiredLevel} e ${skill.cost} PH.`;
+    });
   }
 }

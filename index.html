@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stellar Idle RPG</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Rajdhani:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <header class="top-bar">
+        <div class="brand">
+          <span class="brand-icon">✦</span>
+          <h1>Stellar Idle RPG</h1>
+        </div>
+        <div class="resources">
+          <div class="resource" id="res-credits">
+            <span class="label">Créditos</span>
+            <span class="value">0</span>
+          </div>
+          <div class="resource" id="res-crystals">
+            <span class="label">Cristais Quânticos</span>
+            <span class="value">0</span>
+          </div>
+          <div class="resource" id="res-dps">
+            <span class="label">DPS da Frota</span>
+            <span class="value">0</span>
+          </div>
+        </div>
+      </header>
+
+      <main class="layout">
+        <section class="battle-panel panel">
+          <div class="panel-header">
+            <h2>Campo de Batalha</h2>
+            <p id="zone-label">Setor Desconhecido</p>
+          </div>
+          <canvas id="battle-canvas" width="720" height="320"></canvas>
+          <div class="battle-stats">
+            <div>
+              <span class="muted">Inimigo</span>
+              <strong id="enemy-name">—</strong>
+            </div>
+            <div>
+              <span class="muted">HP</span>
+              <strong id="enemy-hp">0 / 0</strong>
+            </div>
+            <div>
+              <span class="muted">Onda</span>
+              <strong id="wave-label">1</strong>
+            </div>
+          </div>
+          <div class="progress-bar">
+            <div id="enemy-hp-bar" class="progress-fill enemy"></div>
+          </div>
+        </section>
+
+        <aside class="side-panels">
+          <section class="panel crew-panel">
+            <div class="panel-header">
+              <h2>Tripulação</h2>
+              <p>4 heróis atacam automaticamente</p>
+            </div>
+            <div id="crew-list" class="crew-list"></div>
+          </section>
+
+          <section class="panel upgrades-panel">
+            <div class="panel-header">
+              <h2>Melhorias da Nave</h2>
+              <p>Gaste créditos para evoluir</p>
+            </div>
+            <div id="upgrade-list" class="upgrade-list"></div>
+          </section>
+
+          <section class="panel prestige-panel">
+            <div class="panel-header">
+              <h2>Salto Quântico</h2>
+              <p>Reinicie o progresso por bônus permanentes</p>
+            </div>
+            <div class="prestige-info">
+              <p>
+                O <strong>Salto Quântico</strong> é um reset estratégico: você perde
+                créditos, níveis e zonas, mas ganha <strong>Cristais Quânticos</strong>
+                que aumentam dano, ouro e XP para sempre.
+              </p>
+              <div class="prestige-stats">
+                <div>
+                  <span class="muted">Ganho estimado</span>
+                  <strong id="prestige-gain">+0</strong>
+                </div>
+                <div>
+                  <span class="muted">Bônus total</span>
+                  <strong id="prestige-bonus">+0%</strong>
+                </div>
+              </div>
+              <button id="prestige-btn" class="btn prestige" disabled>
+                Executar Salto Quântico
+              </button>
+            </div>
+          </section>
+        </aside>
+      </main>
+
+      <footer class="status-bar">
+        <span id="status-message">Inicializando sistemas...</span>
+        <span id="offline-banner" class="offline-banner hidden"></span>
+      </footer>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

@@ -119,6 +119,8 @@ export class UIManager {
   private bridgeHullBar = document.getElementById('bridge-hull-bar')!;
   private bridgeShieldBar = document.getElementById('bridge-shield-bar')!;
   private bridgeWeaponBar = document.getElementById('bridge-weapon-bar')!;
+  private bridgeEffects = document.getElementById('bridge-effects')!;
+  private bridgeReadiness = document.getElementById('bridge-readiness')!;
   private bridgeStations = document.getElementById('bridge-stations')!;
   private storeToggle = document.getElementById('store-toggle') as HTMLButtonElement;
   private storeOverlay = document.getElementById('store-overlay')!;
@@ -677,6 +679,8 @@ export class UIManager {
     this.bridgeHullBar.style.width = `${Math.max(0, hullPercent)}%`;
     this.bridgeShieldBar.style.width = `${Math.max(0, shieldPercent)}%`;
     this.bridgeWeaponBar.style.width = `${weaponReadiness}%`;
+    this.bridgeEffects.innerHTML = this.renderBridgeEffects(state);
+    this.bridgeReadiness.innerHTML = this.renderBridgeReadiness(state);
 
     for (const hero of state.heroes) {
       const levelEl = this.bridgeStations.querySelector(`[data-bridge-level="${hero.id}"]`);
@@ -695,6 +699,59 @@ export class UIManager {
       if (alertEl) alertEl.classList.toggle('hidden', !hasAvailableSkill);
       if (stationEl) stationEl.classList.toggle('has-upgrade', hasAvailableSkill);
     }
+  }
+
+  private renderBridgeEffects(state: GameState): string {
+    const effects = [
+      ...state.activeAbilityEffects.map((effect) => ({
+        name: effect.name,
+        remaining: effect.remaining,
+      })),
+      ...state.activeTacticalEffects.map((effect) => ({
+        name: effect.name,
+        remaining: effect.remaining,
+      })),
+    ];
+
+    if (effects.length === 0) {
+      return '<div class="bridge-empty">Nenhum efeito ativo.</div>';
+    }
+
+    return effects.map((effect) => `
+      <div class="bridge-effect-chip">
+        <strong>${effect.name}</strong>
+        <span>${Math.ceil(effect.remaining)}s</span>
+      </div>
+    `).join('');
+  }
+
+  private renderBridgeReadiness(state: GameState): string {
+    const officerReadiness = state.heroes.map((hero) => {
+      const template = HERO_TEMPLATES.find((candidate) => candidate.id === hero.id);
+      const ability = getOfficerAbility(hero.id);
+      const cooldown = Math.ceil(hero.abilityCooldown ?? 0);
+      return {
+        name: template?.name ?? hero.id,
+        label: ability.shortName,
+        cooldown,
+      };
+    });
+    const tacticalReadiness = state.tacticalActions.map((actionState) => {
+      const action = getTacticalAction(actionState.id);
+      return {
+        name: action.shortName,
+        label: 'Tática',
+        cooldown: Math.ceil(actionState.cooldown),
+      };
+    });
+
+    return [...officerReadiness, ...tacticalReadiness].map((item) => `
+      <div class="bridge-readiness-item ${item.cooldown > 0 ? 'cooling-down' : 'ready'}">
+        <span>${item.label}</span>
+        <strong>${item.cooldown > 0 ? `${item.cooldown}s` : 'Pronto'}</strong>
+        <small>${item.name}</small>
+      </div>
+    `).join('');
   }
 
   private getStoreCategoryLabel(category: string): string {

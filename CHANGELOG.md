@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Adicionado
+
+- Ações táticas acionáveis durante o combate: reparo, barreira, sobrecarga e varredura.
+- Cooldowns e efeitos temporários persistidos no save local.
+
 ## 0.1.0-alpha.1
 
 Primeira versão alfa jogável publicada.

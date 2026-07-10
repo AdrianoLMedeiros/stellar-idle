@@ -5,6 +5,7 @@ Esta versão é uma build alfa jogável de Stellar Idle RPG.
 ## Escopo
 
 - Combate automático no navegador.
+- Ações táticas leves durante o combate.
 - Progresso local com `localStorage`.
 - Backup manual via exportação/importação de arquivo JSON.
 - Monetização apenas simulada em modo dev, sem pagamentos reais.

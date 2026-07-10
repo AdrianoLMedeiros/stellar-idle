@@ -12,6 +12,7 @@ import {
 import { tickOfficerAbilities } from './abilities';
 import { getPremiumMultiplier } from './monetization';
 import { createEnemyForWave } from './state';
+import { tickTacticalActions } from './tacticalActions';
 import type { CombatTickResult, DamageEvent, GameState, Projectile } from './types';
 
 const HERO_POSITIONS = [
@@ -43,6 +44,7 @@ export function processCombatTick(state: GameState, deltaSeconds: number): Comba
   let retreatCount = 0;
 
   tickOfficerAbilities(state, deltaSeconds);
+  tickTacticalActions(state, deltaSeconds);
   syncShipStats(state);
   regenerateShield(state, deltaSeconds);
 

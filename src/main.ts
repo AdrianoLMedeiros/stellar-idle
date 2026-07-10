@@ -41,6 +41,14 @@ const ui = new UIManager(
       ui.setStatus('Especial ainda em recarga.');
     }
   },
+  (actionId) => {
+    const actionName = loop.tryActivateTacticalAction(actionId);
+    if (actionName) {
+      ui.setStatus(`${actionName} executada.`);
+    } else {
+      ui.setStatus('Ação tática ainda em recarga.');
+    }
+  },
   (itemId) => {
     if (loop.tryClaimStoreItem(itemId)) {
       ui.setStatus('Suprimento ativado em modo dev.');

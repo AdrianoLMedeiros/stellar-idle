@@ -2,6 +2,7 @@ import { getOfficerAbility } from '../data/abilities';
 import { HERO_TEMPLATES } from '../data/heroes';
 import { getOfficerSkills } from '../data/skills';
 import { STORE_ITEMS } from '../data/store';
+import { TACTICAL_ACTIONS, getTacticalAction } from '../data/tacticalActions';
 import { UPGRADE_TEMPLATES } from '../data/upgrades';
 import { ZONES, getZone } from '../data/zones';
 import {
@@ -94,6 +95,7 @@ export class UIManager {
   private shipDamage = document.getElementById('ship-damage')!;
   private shipInterval = document.getElementById('ship-interval')!;
   private shipRegen = document.getElementById('ship-regen')!;
+  private tacticalActionList = document.getElementById('tactical-action-list')!;
   private zoneRoute = document.getElementById('zone-route')!;
   private areaProgressLabel = document.getElementById('area-progress-label')!;
   private areaProgressFill = document.getElementById('area-progress-fill')!;
@@ -149,6 +151,7 @@ export class UIManager {
     private onUpgrade: (id: string) => void,
     private onUnlockSkill: (heroId: string, skillId: string) => void,
     private onActivateAbility: (heroId: string) => void,
+    private onActivateTacticalAction: (actionId: string) => void,
     private onClaimStoreItem: (itemId: string) => void,
     private onPrestige: () => void,
     private onSave: () => void,
@@ -195,6 +198,7 @@ export class UIManager {
     this.importSaveFile.addEventListener('change', () => this.importSelectedSave());
     this.resetBtn.addEventListener('click', () => this.confirmReset());
     this.buildStaticLists();
+    this.buildTacticalActions();
     this.buildZoneRoute();
     this.buildStoreList();
     this.buildBridgeStations();
@@ -273,6 +277,21 @@ export class UIManager {
       btn.addEventListener('click', () => {
         const heroId = btn.dataset.heroAbility;
         if (heroId) this.onActivateAbility(heroId);
+      });
+    });
+  }
+
+  private buildTacticalActions(): void {
+    this.tacticalActionList.innerHTML = TACTICAL_ACTIONS.map((action) => `
+      <button class="btn secondary tactical-action-btn" data-tactical-action="${action.id}" title="${action.description}">
+        ${action.shortName}
+      </button>
+    `).join('');
+
+    this.tacticalActionList.querySelectorAll<HTMLButtonElement>('[data-tactical-action]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const actionId = btn.dataset.tacticalAction;
+        if (actionId) this.onActivateTacticalAction(actionId);
       });
     });
   }
@@ -396,6 +415,21 @@ export class UIManager {
           ? `${ability.name} recarregando.`
           : `${ability.name}: ${ability.description}`;
       }
+    }
+
+    for (const actionState of state.tacticalActions) {
+      const action = getTacticalAction(actionState.id);
+      const btn = this.tacticalActionList.querySelector<HTMLButtonElement>(
+        `[data-tactical-action="${actionState.id}"]`,
+      );
+      if (!btn) continue;
+      const cooldown = Math.ceil(actionState.cooldown);
+      btn.disabled = cooldown > 0;
+      btn.classList.toggle('cooling-down', cooldown > 0);
+      btn.textContent = cooldown > 0 ? `${cooldown}s` : action.shortName;
+      btn.title = cooldown > 0
+        ? `${action.name} recarregando.`
+        : `${action.name}: ${action.description}`;
     }
 
     let affordableUpgradeCount = 0;

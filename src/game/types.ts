@@ -84,6 +84,53 @@ export interface UpgradeState {
   level: number;
 }
 
+export type StoreItemCategory = 'boost' | 'cosmetic' | 'quality_of_life';
+
+export type MonetizationEffectType = 'credit_gain' | 'xp_gain' | 'offline_efficiency';
+
+export interface StoreBoostGrant {
+  id: string;
+  name: string;
+  effect: MonetizationEffectType;
+  multiplier: number;
+  durationSeconds: number;
+}
+
+export interface StoreEntitlementGrant {
+  id: string;
+  name: string;
+  type: 'cosmetic' | 'quality_of_life';
+}
+
+export interface StoreItem {
+  id: string;
+  name: string;
+  description: string;
+  category: StoreItemCategory;
+  priceLabel: string;
+  grants: Array<StoreBoostGrant | StoreEntitlementGrant>;
+}
+
+export interface ActiveBoost {
+  id: string;
+  name: string;
+  effect: MonetizationEffectType;
+  multiplier: number;
+  expiresAt: number;
+}
+
+export interface Entitlement {
+  id: string;
+  name: string;
+  type: 'cosmetic' | 'quality_of_life';
+  acquiredAt: number;
+}
+
+export interface PremiumState {
+  entitlements: Entitlement[];
+  activeBoosts: ActiveBoost[];
+}
+
 export interface CombatState {
   zoneId: number;
   wave: number;
@@ -107,6 +154,7 @@ export interface GameState {
   ship: ShipState;
   heroes: HeroState[];
   upgrades: UpgradeState[];
+  premium: PremiumState;
   combat: CombatState;
   lastTick: number;
   lastSave: number;

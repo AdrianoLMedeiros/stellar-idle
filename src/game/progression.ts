@@ -1,6 +1,7 @@
 import { getSkill, getSkillEffectMultiplier } from '../data/skills';
 import { getUpgradeTemplate } from '../data/upgrades';
 import { getZone } from '../data/zones';
+import { getPremiumMultiplier } from './monetization';
 import { BASE_SHIP_HULL, BASE_SHIP_SHIELD, getPrestigeMultiplier } from './state';
 import type { GameState } from './types';
 
@@ -73,7 +74,10 @@ export function getCreditReward(state: GameState): number {
   const waveBonus = 1 + (state.combat.wave - 1) * 0.05;
   const bossBonus = state.combat.isBoss ? 3 : 1;
   const skillMultiplier = getSkillEffectMultiplier(state, 'credit_gain');
-  return Math.floor(12 * zone.creditMultiplier * scannerBonus * prestige * waveBonus * bossBonus * skillMultiplier);
+  const premiumMultiplier = getPremiumMultiplier(state, 'credit_gain');
+  return Math.floor(
+    12 * zone.creditMultiplier * scannerBonus * prestige * waveBonus * bossBonus * skillMultiplier * premiumMultiplier,
+  );
 }
 
 export function getXpReward(state: GameState): number {
@@ -82,7 +86,8 @@ export function getXpReward(state: GameState): number {
   const prestige = getPrestigeMultiplier(state);
   const bossBonus = state.combat.isBoss ? 3 : 1;
   const skillMultiplier = getSkillEffectMultiplier(state, 'xp_gain');
-  return Math.floor(8 * trainingBonus * prestige * bossBonus * skillMultiplier);
+  const premiumMultiplier = getPremiumMultiplier(state, 'xp_gain');
+  return Math.floor(8 * trainingBonus * prestige * bossBonus * skillMultiplier * premiumMultiplier);
 }
 
 export function xpToLevel(level: number): number {

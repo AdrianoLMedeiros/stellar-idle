@@ -1,6 +1,7 @@
 import { createEnemyForWave, createInitialShip, createInitialState } from './state';
 import { getShipMaxHull, getShipMaxShield } from './progression';
 import { getSkill } from '../data/skills';
+import { createInitialPremiumState, pruneExpiredBoosts } from './monetization';
 import type { GameState } from './types';
 
 const SAVE_KEY = 'stellar-idle-rpg-save-v1';
@@ -34,9 +35,17 @@ function normalizeSave(state: GameState): GameState {
   ship.hull = Math.min(ship.maxHull, ship.hull ?? ship.maxHull);
   ship.shield = Math.min(ship.maxShield, ship.shield ?? ship.maxShield);
 
-  return {
+  const premium = {
+    ...createInitialPremiumState(),
+    ...state.premium,
+    entitlements: state.premium?.entitlements ?? [],
+    activeBoosts: state.premium?.activeBoosts ?? [],
+  };
+
+  const normalized = {
     ...state,
     ship,
+    premium,
     combat,
     heroes: state.heroes.map((hero) => ({
       ...hero,
@@ -45,6 +54,8 @@ function normalizeSave(state: GameState): GameState {
       skillPoints: hero.skillPoints ?? getRetroactiveSkillPoints(hero.level, hero.unlockedSkills ?? []),
     })),
   };
+  pruneExpiredBoosts(normalized);
+  return normalized;
 }
 
 function getRetroactiveSkillPoints(level: number, unlockedSkills: string[]): number {

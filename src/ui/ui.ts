@@ -1,8 +1,11 @@
 import { HERO_TEMPLATES } from '../data/heroes';
 import { getOfficerSkills } from '../data/skills';
+import { STORE_ITEMS } from '../data/store';
 import { UPGRADE_TEMPLATES } from '../data/upgrades';
 import { ZONES, getZone } from '../data/zones';
 import {
+  getShipMaxHull,
+  getShipMaxShield,
   getFleetDps,
   getShipShieldRegen,
   getShipWeaponDamage,
@@ -32,6 +35,16 @@ const CREW_STATIONS: Record<string, string> = {
   lyra: 'Suporte',
 };
 
+const SKILL_EFFECT_LABELS: Record<string, string> = {
+  ship_hull: 'Casco maximo',
+  ship_shield: 'Escudo maximo',
+  shield_regen: 'Regeneracao de escudo',
+  weapon_damage: 'Dano das armas',
+  weapon_speed: 'Cadencia das armas',
+  xp_gain: 'Ganho de XP',
+  credit_gain: 'Creditos de combate',
+};
+
 function formatNumber(value: number): string {
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(2)}M`;
   if (value >= 10_000) return `${(value / 1_000).toFixed(1)}K`;
@@ -45,6 +58,14 @@ function formatRelativeSaveTime(timestamp: number): string {
   const elapsedMinutes = Math.floor(elapsedSeconds / 60);
   if (elapsedMinutes < 60) return `${elapsedMinutes}min`;
   return `${Math.floor(elapsedMinutes / 60)}h`;
+}
+
+function formatDuration(seconds: number): string {
+  if (seconds <= 0) return 'expirado';
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  if (hours > 0) return `${hours}h ${minutes}min`;
+  return `${Math.max(1, minutes)}min`;
 }
 
 export class UIManager {
@@ -77,31 +98,70 @@ export class UIManager {
   private commandToggle = document.getElementById('command-toggle') as HTMLButtonElement;
   private commandOverlay = document.getElementById('command-overlay')!;
   private commandClose = document.getElementById('command-close') as HTMLButtonElement;
+  private storeToggle = document.getElementById('store-toggle') as HTMLButtonElement;
+  private storeOverlay = document.getElementById('store-overlay')!;
+  private storeClose = document.getElementById('store-close') as HTMLButtonElement;
+  private storeList = document.getElementById('store-list')!;
+  private activeBoostList = document.getElementById('active-boost-list')!;
+  private heroOverlay = document.getElementById('hero-overlay')!;
+  private heroDetailClose = document.getElementById('hero-detail-close') as HTMLButtonElement;
+  private heroDetailPortrait = document.getElementById('hero-detail-portrait') as HTMLCanvasElement;
+  private heroDetailName = document.getElementById('hero-detail-name')!;
+  private heroDetailRole = document.getElementById('hero-detail-role')!;
+  private heroDetailLevel = document.getElementById('hero-detail-level')!;
+  private heroDetailXp = document.getElementById('hero-detail-xp')!;
+  private heroDetailPoints = document.getElementById('hero-detail-points')!;
+  private heroDetailXpBar = document.getElementById('hero-detail-xpbar')!;
+  private heroDetailContribution = document.getElementById('hero-detail-contribution')!;
+  private heroDetailSkills = document.getElementById('hero-detail-skills')!;
   private saveBtn = document.getElementById('save-btn') as HTMLButtonElement;
   private resetBtn = document.getElementById('reset-btn') as HTMLButtonElement;
   private statusMessage = document.getElementById('status-message')!;
   private offlineBanner = document.getElementById('offline-banner')!;
+  private currentState: GameState | null = null;
+  private selectedHeroId: string | null = null;
+  private heroOverlayRenderKey = '';
 
   constructor(
     private onUpgrade: (id: string) => void,
     private onUnlockSkill: (heroId: string, skillId: string) => void,
+    private onClaimStoreItem: (itemId: string) => void,
     private onPrestige: () => void,
     private onSave: () => void,
     private onReset: () => void,
   ) {
     this.prestigeBtn.addEventListener('click', () => this.onPrestige());
+    this.storeToggle.addEventListener('click', () => this.openStoreOverlay());
+    this.storeClose.addEventListener('click', () => this.closeStoreOverlay());
+    this.storeOverlay.addEventListener('click', (event) => {
+      if (event.target === this.storeOverlay) this.closeStoreOverlay();
+    });
     this.commandToggle.addEventListener('click', () => this.openCommandOverlay());
     this.commandClose.addEventListener('click', () => this.closeCommandOverlay());
     this.commandOverlay.addEventListener('click', (event) => {
       if (event.target === this.commandOverlay) this.closeCommandOverlay();
     });
+    this.heroDetailClose.addEventListener('click', () => this.closeHeroOverlay());
+    this.heroOverlay.addEventListener('click', (event) => {
+      if (event.target === this.heroOverlay) this.closeHeroOverlay();
+    });
+    this.heroDetailSkills.addEventListener('click', (event) => {
+      const btn = (event.target as HTMLElement).closest<HTMLButtonElement>('[data-skill]');
+      if (!btn || !this.selectedHeroId) return;
+      const skillId = btn.dataset.skill;
+      if (skillId) this.onUnlockSkill(this.selectedHeroId, skillId);
+    });
     window.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') this.closeCommandOverlay();
+      if (event.key !== 'Escape') return;
+      this.closeHeroOverlay();
+      this.closeStoreOverlay();
+      this.closeCommandOverlay();
     });
     this.saveBtn.addEventListener('click', () => this.onSave());
     this.resetBtn.addEventListener('click', () => this.confirmReset());
     this.buildStaticLists();
     this.buildZoneRoute();
+    this.buildStoreList();
   }
 
   private buildStaticLists(): void {
@@ -119,13 +179,11 @@ export class UIManager {
                 <div data-hero-xp-bar="${hero.id}"></div>
               </div>
             </div>
-            <div class="skill-list" data-skill-list="${hero.id}">
-              ${this.renderSkillButtons(hero.id)}
-            </div>
           </div>
           <div class="crew-meta">
             <span class="muted">Posto</span>
             <strong data-hero-station="${hero.id}">${CREW_STATIONS[hero.id] ?? hero.roleLabel}</strong>
+            <button class="btn secondary hero-info-btn" data-hero-open="${hero.id}">Info</button>
           </div>
         </article>
       `;
@@ -165,23 +223,12 @@ export class UIManager {
       });
     });
 
-    this.crewList.querySelectorAll<HTMLButtonElement>('[data-skill]').forEach((btn) => {
+    this.crewList.querySelectorAll<HTMLButtonElement>('[data-hero-open]').forEach((btn) => {
       btn.addEventListener('click', () => {
-        const heroId = btn.dataset.hero;
-        const skillId = btn.dataset.skill;
-        if (heroId && skillId) this.onUnlockSkill(heroId, skillId);
+        const heroId = btn.dataset.heroOpen;
+        if (heroId) this.openHeroOverlay(heroId);
       });
     });
-  }
-
-  private renderSkillButtons(heroId: string): string {
-    return getOfficerSkills(heroId).map((skill) => {
-      return `
-        <button class="skill-chip" data-hero="${heroId}" data-skill="${skill.id}" title="${skill.description}">
-          ${skill.name}
-        </button>
-      `;
-    }).join('');
   }
 
   private buildZoneRoute(): void {
@@ -195,7 +242,31 @@ export class UIManager {
     }).join('');
   }
 
+  private buildStoreList(): void {
+    this.storeList.innerHTML = STORE_ITEMS.map((item) => `
+      <article class="store-card">
+        <div>
+          <div class="store-card-title">
+            <strong>${item.name}</strong>
+            <span>${this.getStoreCategoryLabel(item.category)}</span>
+          </div>
+          <p>${item.description}</p>
+          <small>${item.priceLabel}</small>
+        </div>
+        <button class="btn secondary store-claim" data-store-item="${item.id}">Ativar</button>
+      </article>
+    `).join('');
+
+    this.storeList.querySelectorAll<HTMLButtonElement>('[data-store-item]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const itemId = btn.dataset.storeItem;
+        if (itemId) this.onClaimStoreItem(itemId);
+      });
+    });
+  }
+
   update(state: GameState): void {
+    this.currentState = state;
     const zone = getZone(state.combat.zoneId);
 
     this.resCredits.textContent = formatNumber(state.credits);
@@ -216,14 +287,24 @@ export class UIManager {
       const levelEl = this.crewList.querySelector(`[data-hero-level="${hero.id}"]`);
       const xpLabelEl = this.crewList.querySelector(`[data-hero-xp-label="${hero.id}"]`);
       const xpBarEl = this.crewList.querySelector<HTMLElement>(`[data-hero-xp-bar="${hero.id}"]`);
-      const skillListEl = this.crewList.querySelector<HTMLElement>(`[data-skill-list="${hero.id}"]`);
+      const infoBtn = this.crewList.querySelector<HTMLButtonElement>(`[data-hero-open="${hero.id}"]`);
       const nextLevelXp = xpToLevel(hero.level);
       if (levelEl) levelEl.textContent = String(hero.level);
       if (xpLabelEl) {
         xpLabelEl.textContent = `XP ${formatNumber(hero.xp)} / ${formatNumber(nextLevelXp)} • PH ${hero.skillPoints}`;
       }
       if (xpBarEl) xpBarEl.style.width = `${Math.min(100, (hero.xp / nextLevelXp) * 100)}%`;
-      if (skillListEl) this.updateSkillButtons(skillListEl, hero);
+      if (infoBtn) {
+        const hasAvailableSkill = getOfficerSkills(hero.id).some((skill) => {
+          return !hero.unlockedSkills.includes(skill.id)
+            && hero.level >= skill.requiredLevel
+            && hero.skillPoints >= skill.cost;
+        });
+        infoBtn.classList.toggle('has-upgrade', hasAvailableSkill);
+        infoBtn.title = hasAvailableSkill
+          ? 'Habilidade disponivel para desbloquear'
+          : 'Ver informacoes do oficial';
+      }
     }
 
     for (const upgrade of UPGRADE_TEMPLATES) {
@@ -245,6 +326,8 @@ export class UIManager {
     this.totalDefeated.textContent = formatNumber(state.totalEnemiesDefeated);
     this.prestigeCount.textContent = formatNumber(state.prestigeCount);
     this.lastSave.textContent = formatRelativeSaveTime(state.lastSave);
+    this.updateHeroOverlay();
+    this.updateStoreOverlay();
   }
 
   setStatus(message: string): void {
@@ -275,6 +358,32 @@ export class UIManager {
   private closeCommandOverlay(): void {
     this.commandOverlay.classList.add('hidden');
     this.commandOverlay.setAttribute('aria-hidden', 'true');
+  }
+
+  private openStoreOverlay(): void {
+    this.storeOverlay.classList.remove('hidden');
+    this.storeOverlay.setAttribute('aria-hidden', 'false');
+    this.updateStoreOverlay();
+  }
+
+  private closeStoreOverlay(): void {
+    this.storeOverlay.classList.add('hidden');
+    this.storeOverlay.setAttribute('aria-hidden', 'true');
+  }
+
+  private openHeroOverlay(heroId: string): void {
+    this.selectedHeroId = heroId;
+    this.heroOverlayRenderKey = '';
+    this.heroOverlay.classList.remove('hidden');
+    this.heroOverlay.setAttribute('aria-hidden', 'false');
+    this.updateHeroOverlay();
+  }
+
+  private closeHeroOverlay(): void {
+    this.heroOverlay.classList.add('hidden');
+    this.heroOverlay.setAttribute('aria-hidden', 'true');
+    this.selectedHeroId = null;
+    this.heroOverlayRenderKey = '';
   }
 
   private updateAreaProgress(state: GameState): void {
@@ -308,20 +417,154 @@ export class UIManager {
     this.shipRegen.textContent = `${getShipShieldRegen(state).toFixed(1)}/s`;
   }
 
-  private updateSkillButtons(container: HTMLElement, hero: GameState['heroes'][number]): void {
-    container.querySelectorAll<HTMLButtonElement>('[data-skill]').forEach((btn) => {
-      const skillId = btn.dataset.skill;
-      const skill = getOfficerSkills(hero.id).find((candidate) => candidate.id === skillId);
-      if (!skill) return;
+  private updateHeroOverlay(): void {
+    if (!this.currentState || !this.selectedHeroId || this.heroOverlay.classList.contains('hidden')) return;
 
+    const hero = this.currentState.heroes.find((candidate) => candidate.id === this.selectedHeroId);
+    const template = HERO_TEMPLATES.find((candidate) => candidate.id === this.selectedHeroId);
+    if (!hero || !template) return;
+
+    const renderKey = this.getHeroOverlayRenderKey(hero, this.currentState);
+    if (renderKey === this.heroOverlayRenderKey) return;
+    this.heroOverlayRenderKey = renderKey;
+
+    const ctx = this.heroDetailPortrait.getContext('2d');
+    if (ctx) drawCrewPortrait(ctx, template.color, template.accent, template.role);
+
+    const nextLevelXp = xpToLevel(hero.level);
+    this.heroDetailName.textContent = template.name;
+    this.heroDetailRole.textContent = `${CREW_STATIONS[template.id] ?? template.roleLabel} da nave`;
+    this.heroDetailLevel.textContent = String(hero.level);
+    this.heroDetailXp.textContent = `${formatNumber(hero.xp)} / ${formatNumber(nextLevelXp)}`;
+    this.heroDetailPoints.textContent = `${hero.skillPoints} PH`;
+    this.heroDetailXpBar.style.width = `${Math.min(100, (hero.xp / nextLevelXp) * 100)}%`;
+    this.heroDetailContribution.innerHTML = this.renderHeroContribution(template.id, this.currentState);
+    this.heroDetailSkills.innerHTML = this.renderHeroSkillCards(hero);
+  }
+
+  private getHeroOverlayRenderKey(hero: GameState['heroes'][number], state: GameState): string {
+    return [
+      hero.id,
+      hero.level,
+      hero.xp,
+      hero.skillPoints,
+      hero.unlockedSkills.join(','),
+      getShipMaxHull(state),
+      getShipMaxShield(state),
+      getShipWeaponDamage(state),
+      getShipWeaponInterval(state).toFixed(3),
+      getShipShieldRegen(state).toFixed(3),
+    ].join('|');
+  }
+
+  private updateStoreOverlay(): void {
+    if (!this.currentState || this.storeOverlay.classList.contains('hidden')) return;
+
+    const now = Date.now();
+    const activeBoosts = this.currentState.premium.activeBoosts
+      .filter((boost) => boost.expiresAt > now)
+      .map((boost) => {
+        const remainingSeconds = Math.ceil((boost.expiresAt - now) / 1000);
+        return `
+          <div>
+            <span class="muted">${boost.name}</span>
+            <strong>${Math.round((boost.multiplier - 1) * 100)}% • ${formatDuration(remainingSeconds)}</strong>
+          </div>
+        `;
+      }).join('');
+
+    this.activeBoostList.innerHTML = activeBoosts || `
+      <div class="empty-boosts">
+        Nenhum boost ativo.
+      </div>
+    `;
+
+    this.storeList.querySelectorAll<HTMLButtonElement>('[data-store-item]').forEach((btn) => {
+      const item = STORE_ITEMS.find((candidate) => candidate.id === btn.dataset.storeItem);
+      const isCosmeticOwned = item?.grants.some((grant) => {
+        return !('effect' in grant)
+          && this.currentState?.premium.entitlements.some((entitlement) => entitlement.id === grant.id);
+      }) ?? false;
+      btn.disabled = isCosmeticOwned;
+      btn.textContent = isCosmeticOwned ? 'Obtido' : 'Ativar';
+    });
+  }
+
+  private getStoreCategoryLabel(category: string): string {
+    if (category === 'boost') return 'Boost';
+    if (category === 'cosmetic') return 'Cosmetico';
+    return 'Conveniencia';
+  }
+
+  private renderHeroContribution(heroId: string, state: GameState): string {
+    if (heroId === 'nova') {
+      return this.renderContributionItems([
+        ['Casco max.', formatNumber(getShipMaxHull(state))],
+        ['Dano das armas', formatNumber(getShipWeaponDamage(state))],
+        ['Foco', 'Comando e disciplina de frota'],
+      ]);
+    }
+
+    if (heroId === 'vex') {
+      return this.renderContributionItems([
+        ['Dano das armas', formatNumber(getShipWeaponDamage(state))],
+        ['Recarga', `${getShipWeaponInterval(state).toFixed(2)}s`],
+        ['Foco', 'Artilharia e cadencia'],
+      ]);
+    }
+
+    if (heroId === 'aria') {
+      return this.renderContributionItems([
+        ['Escudo max.', formatNumber(getShipMaxShield(state))],
+        ['Casco max.', formatNumber(getShipMaxHull(state))],
+        ['Foco', 'Integridade e engenharia'],
+      ]);
+    }
+
+    return this.renderContributionItems([
+      ['Regeneracao', `${getShipShieldRegen(state).toFixed(1)}/s`],
+      ['Escudo max.', formatNumber(getShipMaxShield(state))],
+      ['Foco', 'Sustentacao da tripulacao'],
+    ]);
+  }
+
+  private renderContributionItems(items: Array<[string, string]>): string {
+    return items.map(([label, value]) => `
+      <div>
+        <span class="muted">${label}</span>
+        <strong>${value}</strong>
+      </div>
+    `).join('');
+  }
+
+  private renderHeroSkillCards(hero: GameState['heroes'][number]): string {
+    return getOfficerSkills(hero.id).map((skill) => {
       const unlocked = hero.unlockedSkills.includes(skill.id);
       const available = hero.level >= skill.requiredLevel && hero.skillPoints >= skill.cost;
-      btn.disabled = unlocked || !available;
-      btn.classList.toggle('unlocked', unlocked);
-      btn.textContent = unlocked ? `${skill.name} ✓` : skill.name;
-      btn.title = unlocked
-        ? `${skill.description} Desbloqueada.`
-        : `${skill.description} Requer Nv. ${skill.requiredLevel} e ${skill.cost} PH.`;
-    });
+      const effects = skill.effects.map((effect) => {
+        const label = SKILL_EFFECT_LABELS[effect.type] ?? effect.type;
+        return `${label}: +${Math.round(effect.value * 100)}%`;
+      }).join(' • ');
+      const status = unlocked
+        ? 'Desbloqueada'
+        : `Requer Nv. ${skill.requiredLevel} e ${skill.cost} PH`;
+      const action = unlocked ? 'Ativa' : 'Desbloquear';
+
+      return `
+        <article class="hero-skill-card ${unlocked ? 'unlocked' : ''}">
+          <div>
+            <div class="hero-skill-title">
+              <strong>${skill.name}</strong>
+              <span>${status}</span>
+            </div>
+            <p>${skill.description}</p>
+            <small>${effects}</small>
+          </div>
+          <button class="btn secondary" data-skill="${skill.id}" ${unlocked || !available ? 'disabled' : ''}>
+            ${action}
+          </button>
+        </article>
+      `;
+    }).join('');
   }
 }

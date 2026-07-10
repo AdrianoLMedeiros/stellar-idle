@@ -19,7 +19,10 @@
           <span class="brand-icon">✦</span>
           <h1>Stellar Idle RPG</h1>
         </div>
-        <button id="command-toggle" class="btn secondary command-toggle">Comando</button>
+        <div class="top-actions">
+          <button id="store-toggle" class="btn secondary command-toggle">Suprimentos</button>
+          <button id="command-toggle" class="btn secondary command-toggle">Comando</button>
+        </div>
         <div class="resources">
           <div class="resource" id="res-credits">
             <span class="label">Créditos</span>
@@ -194,6 +197,68 @@
               <button id="save-btn" class="btn secondary">Salvar</button>
               <button id="reset-btn" class="btn danger">Resetar</button>
             </div>
+          </div>
+        </section>
+      </div>
+
+      <div id="store-overlay" class="store-overlay hidden" aria-hidden="true">
+        <section class="panel store-dialog" role="dialog" aria-modal="true" aria-labelledby="store-title">
+          <div class="panel-header store-dialog-header">
+            <div>
+              <h2 id="store-title">Suprimentos</h2>
+              <p>Base dev para boosts, cosmeticos e conveniencias futuras</p>
+            </div>
+            <button id="store-close" class="btn secondary">Fechar</button>
+          </div>
+          <div class="store-body">
+            <div class="store-note">
+              <strong>Modo dev</strong>
+              <span>Compras simuladas localmente. Nenhum pagamento real e processado.</span>
+            </div>
+            <div id="active-boost-list" class="active-boost-list"></div>
+            <div id="store-list" class="store-list"></div>
+          </div>
+        </section>
+      </div>
+
+      <div id="hero-overlay" class="hero-overlay hidden" aria-hidden="true">
+        <section class="panel hero-dialog" role="dialog" aria-modal="true" aria-labelledby="hero-detail-name">
+          <div class="panel-header hero-dialog-header">
+            <div class="hero-dialog-title">
+              <canvas id="hero-detail-portrait" class="hero-detail-portrait" width="72" height="72"></canvas>
+              <div>
+                <h2 id="hero-detail-name">Oficial</h2>
+                <p id="hero-detail-role">Tripulação</p>
+              </div>
+            </div>
+            <button id="hero-detail-close" class="btn secondary">Fechar</button>
+          </div>
+          <div class="hero-detail-body">
+            <div class="hero-detail-stats">
+              <div>
+                <span class="muted">Nível</span>
+                <strong id="hero-detail-level">1</strong>
+              </div>
+              <div>
+                <span class="muted">XP</span>
+                <strong id="hero-detail-xp">0 / 40</strong>
+              </div>
+              <div>
+                <span class="muted">Pontos</span>
+                <strong id="hero-detail-points">0 PH</strong>
+              </div>
+            </div>
+            <div class="hero-detail-xpbar">
+              <div id="hero-detail-xpbar"></div>
+            </div>
+            <section class="hero-detail-section">
+              <h3>Contribuição</h3>
+              <div id="hero-detail-contribution" class="hero-contribution"></div>
+            </section>
+            <section class="hero-detail-section">
+              <h3>Habilidades</h3>
+              <div id="hero-detail-skills" class="hero-skill-list"></div>
+            </section>
           </div>
         </section>
       </div>

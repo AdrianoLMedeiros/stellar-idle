@@ -1,6 +1,7 @@
 import { HERO_TEMPLATES } from '../data/heroes';
 import { UPGRADE_TEMPLATES } from '../data/upgrades';
 import { getZone } from '../data/zones';
+import { createInitialPremiumState } from './monetization';
 import type { CombatState, GameState, HeroState } from './types';
 
 const BASE_ENEMY_HP = 40;
@@ -76,6 +77,7 @@ export function createInitialState(): GameState {
     ship: createInitialShip(),
     heroes: createInitialHeroes(),
     upgrades: createInitialUpgrades(),
+    premium: createInitialPremiumState(),
     combat: createEnemyForWave(1, 1),
     lastTick: now,
     lastSave: now,

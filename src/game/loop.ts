@@ -1,4 +1,5 @@
 import { applyOfflineProgress, processCombatTick } from './combat';
+import { grantStoreItem, pruneExpiredBoosts } from './monetization';
 import { buyUpgrade, unlockSkill } from './progression';
 import { performPrestige } from './prestige';
 import { loadGame, saveGame } from './save';
@@ -53,6 +54,7 @@ export class GameLoop {
     this.accumulator += frameDelta;
 
     while (this.accumulator >= TICK_RATE) {
+      pruneExpiredBoosts(this.state);
       const result = processCombatTick(this.state, TICK_RATE);
       this.onCombat(result);
       this.accumulator -= TICK_RATE;
@@ -83,6 +85,12 @@ export class GameLoop {
 
   tryUnlockSkill(heroId: string, skillId: string): boolean {
     const ok = unlockSkill(this.state, heroId, skillId);
+    if (ok) saveGame(this.state);
+    return ok;
+  }
+
+  tryClaimStoreItem(itemId: string): boolean {
+    const ok = grantStoreItem(this.state, itemId);
     if (ok) saveGame(this.state);
     return ok;
   }

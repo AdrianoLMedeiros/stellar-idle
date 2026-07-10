@@ -9,6 +9,7 @@ import {
   getShipWeaponInterval,
   getXpReward,
 } from './progression';
+import { getPremiumMultiplier } from './monetization';
 import { createEnemyForWave } from './state';
 import type { CombatTickResult, DamageEvent, GameState, Projectile } from './types';
 
@@ -174,7 +175,8 @@ export function applyOfflineProgress(state: GameState, elapsedSeconds: number): 
   const capped = Math.min(elapsedSeconds, 8 * 3600);
   const dps = getFleetDps(state);
 
-  const kills = Math.floor((dps * capped * 0.5) / Math.max(1, state.combat.enemyMaxHp));
+  const offlineEfficiency = 0.5 * getPremiumMultiplier(state, 'offline_efficiency');
+  const kills = Math.floor((dps * capped * offlineEfficiency) / Math.max(1, state.combat.enemyMaxHp));
   let totalCredits = 0;
 
   for (let i = 0; i < kills; i++) {

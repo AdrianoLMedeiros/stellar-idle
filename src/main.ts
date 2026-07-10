@@ -33,6 +33,13 @@ const ui = new UIManager(
       ui.setStatus('Habilidade indisponível para este oficial.');
     }
   },
+  (itemId) => {
+    if (loop.tryClaimStoreItem(itemId)) {
+      ui.setStatus('Suprimento ativado em modo dev.');
+    } else {
+      ui.setStatus('Suprimento indisponível.');
+    }
+  },
   () => {
     const gain = loop.tryPrestige();
     if (gain) {

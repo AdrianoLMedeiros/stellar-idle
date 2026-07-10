@@ -2,11 +2,12 @@ import { createEnemyForWave, createInitialShip, createInitialState } from './sta
 import { getShipMaxHull, getShipMaxShield } from './progression';
 import { getSkill } from '../data/skills';
 import { createInitialPremiumState, pruneExpiredBoosts } from './monetization';
+import { createInitialTacticalActions } from './tacticalActions';
 import type { GameState } from './types';
 
 const SAVE_KEY = 'stellar-idle-rpg-save-v1';
 const SAVE_SCHEMA = 'stellar-idle-rpg-save';
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 export const APP_VERSION = '0.1.0-alpha.1';
 
 interface SaveEnvelope {
@@ -79,6 +80,8 @@ function normalizeSave(state: GameState): GameState {
     ship,
     premium,
     activeAbilityEffects: state.activeAbilityEffects ?? [],
+    tacticalActions: mergeTacticalActions(state.tacticalActions ?? []),
+    activeTacticalEffects: state.activeTacticalEffects ?? [],
     combat,
     heroes: state.heroes.map((hero) => ({
       ...hero,
@@ -88,8 +91,36 @@ function normalizeSave(state: GameState): GameState {
       abilityCooldown: hero.abilityCooldown ?? 0,
     })),
   };
+  applyElapsedSaveTime(normalized);
   pruneExpiredBoosts(normalized);
   return normalized;
+}
+
+function applyElapsedSaveTime(state: GameState): void {
+  const elapsedSeconds = Math.max(0, (Date.now() - (state.lastTick ?? Date.now())) / 1000);
+  if (elapsedSeconds <= 0) return;
+
+  state.heroes = state.heroes.map((hero) => ({
+    ...hero,
+    abilityCooldown: Math.max(0, hero.abilityCooldown - elapsedSeconds),
+  }));
+  state.tacticalActions = state.tacticalActions.map((action) => ({
+    ...action,
+    cooldown: Math.max(0, action.cooldown - elapsedSeconds),
+  }));
+  state.activeAbilityEffects = state.activeAbilityEffects
+    .map((effect) => ({ ...effect, remaining: effect.remaining - elapsedSeconds }))
+    .filter((effect) => effect.remaining > 0);
+  state.activeTacticalEffects = state.activeTacticalEffects
+    .map((effect) => ({ ...effect, remaining: effect.remaining - elapsedSeconds }))
+    .filter((effect) => effect.remaining > 0);
+}
+
+function mergeTacticalActions(actions: GameState['tacticalActions']): GameState['tacticalActions'] {
+  return createInitialTacticalActions().map((action) => ({
+    ...action,
+    cooldown: actions.find((candidate) => candidate.id === action.id)?.cooldown ?? 0,
+  }));
 }
 
 function getRetroactiveSkillPoints(level: number, unlockedSkills: string[]): number {

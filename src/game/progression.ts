@@ -3,6 +3,7 @@ import { getUpgradeTemplate } from '../data/upgrades';
 import { getZone } from '../data/zones';
 import { getPremiumMultiplier } from './monetization';
 import { BASE_SHIP_HULL, BASE_SHIP_SHIELD, getPrestigeMultiplier } from './state';
+import { getTacticalEffectMultiplier } from './tacticalActions';
 import type { GameState } from './types';
 
 export function getUpgradeLevel(state: GameState, id: string): number {
@@ -50,7 +51,10 @@ export function getShipWeaponDamage(state: GameState): number {
   const commandBonus = captain ? 1 + (captain.level - 1) * 0.02 : 1;
   const prestige = getPrestigeMultiplier(state);
   const skillMultiplier = getSkillEffectMultiplier(state, 'weapon_damage');
-  return Math.floor((18 + weaponLevel * 4 + (gunnerLevel - 1) * 3) * commandBonus * prestige * skillMultiplier);
+  const tacticalMultiplier = getTacticalEffectMultiplier(state, 'weapon_damage');
+  return Math.floor(
+    (18 + weaponLevel * 4 + (gunnerLevel - 1) * 3) * commandBonus * prestige * skillMultiplier * tacticalMultiplier,
+  );
 }
 
 export function getShipWeaponInterval(state: GameState): number {
@@ -80,8 +84,10 @@ export function getCreditReward(state: GameState): number {
   const bossBonus = state.combat.isBoss ? 3 : 1;
   const skillMultiplier = getSkillEffectMultiplier(state, 'credit_gain');
   const premiumMultiplier = getPremiumMultiplier(state, 'credit_gain');
+  const tacticalMultiplier = getTacticalEffectMultiplier(state, 'credit_gain');
   return Math.floor(
-    12 * zone.creditMultiplier * scannerBonus * prestige * waveBonus * bossBonus * skillMultiplier * premiumMultiplier,
+    12 * zone.creditMultiplier * scannerBonus * prestige * waveBonus * bossBonus * skillMultiplier * premiumMultiplier
+      * tacticalMultiplier,
   );
 }
 
@@ -92,7 +98,8 @@ export function getXpReward(state: GameState): number {
   const bossBonus = state.combat.isBoss ? 3 : 1;
   const skillMultiplier = getSkillEffectMultiplier(state, 'xp_gain');
   const premiumMultiplier = getPremiumMultiplier(state, 'xp_gain');
-  return Math.floor(8 * trainingBonus * prestige * bossBonus * skillMultiplier * premiumMultiplier);
+  const tacticalMultiplier = getTacticalEffectMultiplier(state, 'xp_gain');
+  return Math.floor(8 * trainingBonus * prestige * bossBonus * skillMultiplier * premiumMultiplier * tacticalMultiplier);
 }
 
 export function xpToLevel(level: number): number {

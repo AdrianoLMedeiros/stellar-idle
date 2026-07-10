@@ -2,6 +2,7 @@ import { HERO_TEMPLATES } from '../data/heroes';
 import { UPGRADE_TEMPLATES } from '../data/upgrades';
 import { getZone } from '../data/zones';
 import { createInitialPremiumState } from './monetization';
+import { createInitialTacticalActions } from './tacticalActions';
 import type { CombatState, GameState, HeroState } from './types';
 
 const BASE_ENEMY_HP = 40;
@@ -72,7 +73,7 @@ export function createEnemyForWave(zoneId: number, wave: number): CombatState {
 export function createInitialState(): GameState {
   const now = Date.now();
   return {
-    saveVersion: 2,
+    saveVersion: 3,
     credits: 0,
     quantumCrystals: 0,
     prestigeCount: 0,
@@ -81,6 +82,8 @@ export function createInitialState(): GameState {
     upgrades: createInitialUpgrades(),
     premium: createInitialPremiumState(),
     activeAbilityEffects: [],
+    tacticalActions: createInitialTacticalActions(),
+    activeTacticalEffects: [],
     combat: createEnemyForWave(1, 1),
     lastTick: now,
     lastSave: now,

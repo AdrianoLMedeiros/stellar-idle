@@ -5,6 +5,7 @@ import { buyUpgrade, unlockSkill } from './progression';
 import { performPrestige } from './prestige';
 import { exportSaveData, importSaveData, loadGame, saveGame } from './save';
 import { createInitialState } from './state';
+import { activateTacticalAction } from './tacticalActions';
 import type { CombatTickResult, GameState } from './types';
 
 const TICK_RATE = 1 / 60;
@@ -100,6 +101,12 @@ export class GameLoop {
     const abilityName = activateOfficerAbility(this.state, heroId);
     if (abilityName) saveGame(this.state);
     return abilityName;
+  }
+
+  tryActivateTacticalAction(actionId: string): string | null {
+    const actionName = activateTacticalAction(this.state, actionId);
+    if (actionName) saveGame(this.state);
+    return actionName;
   }
 
   saveNow(): void {

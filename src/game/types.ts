@@ -51,6 +51,39 @@ export interface ActiveAbilityEffect {
   effects: AbilityEffect[];
 }
 
+export type TacticalEffectType = 'weapon_damage' | 'credit_gain' | 'xp_gain';
+
+export interface TacticalEffect {
+  type: TacticalEffectType;
+  value: number;
+}
+
+export type TacticalActionKind = 'repair_hull' | 'restore_shield' | 'timed_effect';
+
+export interface TacticalAction {
+  id: string;
+  name: string;
+  shortName: string;
+  description: string;
+  cooldown: number;
+  duration?: number;
+  kind: TacticalActionKind;
+  value: number;
+  effects?: TacticalEffect[];
+}
+
+export interface TacticalActionState {
+  id: string;
+  cooldown: number;
+}
+
+export interface ActiveTacticalEffect {
+  id: string;
+  name: string;
+  remaining: number;
+  effects: TacticalEffect[];
+}
+
 export type SkillEffectType =
   | 'ship_hull'
   | 'ship_shield'
@@ -188,6 +221,8 @@ export interface GameState {
   upgrades: UpgradeState[];
   premium: PremiumState;
   activeAbilityEffects: ActiveAbilityEffect[];
+  tacticalActions: TacticalActionState[];
+  activeTacticalEffects: ActiveTacticalEffect[];
   combat: CombatState;
   lastTick: number;
   lastSave: number;

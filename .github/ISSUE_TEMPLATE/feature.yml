@@ -1,0 +1,51 @@
+name: Feature
+description: Propor uma nova funcionalidade ou melhoria de gameplay/UI.
+title: "feat: "
+labels: ["feature"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Resumo
+      description: O que queremos adicionar ou melhorar?
+      placeholder: Ex. Adicionar ações táticas durante o combate.
+    validations:
+      required: true
+  - type: textarea
+    id: player_value
+    attributes:
+      label: Valor para o jogador
+      description: Que problema isso resolve ou que sensação melhora?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Escopo
+      description: Liste o que entra e o que fica fora desta issue.
+      placeholder: |
+        Entra:
+        - Botões de ação tática
+        - Cooldown visual
+
+        Fora:
+        - Backend
+        - Balanceamento final
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Critérios de aceite
+      description: Como saberemos que a feature está pronta?
+      placeholder: |
+        - Build passa
+        - Ação pode ser usada em combate
+        - Cooldown aparece na UI
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Observações
+      description: Referências, screenshots, decisões de design ou riscos.

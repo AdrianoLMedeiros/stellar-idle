@@ -42,6 +42,7 @@ O projeto começou a preparar uma base de monetização sem gateway real. A regr
 - [Alpha 0.1.0](docs/alpha.md)
 - [Changelog](CHANGELOG.md)
 - [Monetização](docs/monetization.md)
+- [Workflow de desenvolvimento](docs/workflow.md)
 
 ## Stack
 

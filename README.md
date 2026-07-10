@@ -4,6 +4,8 @@ Idle RPG sci-fi para navegador com combate automático entre uma nave expedicion
 
 Versão atual: `0.1.0-alpha.1`.
 
+Deploy alfa: `https://stellar-ten-nu.vercel.app/`.
+
 ## Como jogar
 
 1. Instale dependências: `npm install`
@@ -34,6 +36,12 @@ Versão atual: `0.1.0-alpha.1`.
 ## Monetização
 
 O projeto começou a preparar uma base de monetização sem gateway real. A regra atual é preservar um core gratuito justo e usar compras futuras para conveniência, ritmo e cosméticos. Veja [docs/monetization.md](docs/monetization.md).
+
+## Documentação
+
+- [Alpha 0.1.0](docs/alpha.md)
+- [Changelog](CHANGELOG.md)
+- [Monetização](docs/monetization.md)
 
 ## Stack
 

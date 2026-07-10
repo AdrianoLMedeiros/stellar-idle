@@ -595,6 +595,17 @@ body {
     #08111f;
 }
 
+.upgrade-empty {
+  margin: 10px;
+  padding: 12px;
+  border: 1px dashed rgba(122, 155, 184, 0.3);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.35;
+  background: rgba(18, 30, 53, 0.48);
+}
+
 .crew-name,
 .upgrade-name {
   margin: 0;

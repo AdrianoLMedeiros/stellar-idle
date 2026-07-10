@@ -1,0 +1,27 @@
+# Changelog
+
+## 0.1.0-alpha.1
+
+Primeira versão alfa jogável publicada.
+
+### Adicionado
+
+- HUD em tela cheia com canvas como área principal de combate.
+- Nave como entidade central de combate, com casco, escudo, armas e regeneração.
+- Tripulação com XP, habilidades passivas, especiais ativos e overlay de detalhes.
+- Passadiço da nave como overlay de leitura tática e estações dos oficiais.
+- Bosses ao final de cada área.
+- Suprimentos em modo dev para preparar monetização futura.
+- Save local versionado em `localStorage`.
+- Exportação e importação de backup de save pelo painel Comando.
+
+### Alterado
+
+- Painéis principais reposicionados como HUD flutuante sobre o canvas.
+- Navegação compactada para fase atual e próxima.
+- Melhorias da nave passam a mostrar apenas opções compráveis.
+
+### Corrigido
+
+- Texto de fase e alerta de boss deixam de ficar escondidos pelos painéis superiores.
+- Cards de tripulação receberam mais altura para evitar corte dos botões.

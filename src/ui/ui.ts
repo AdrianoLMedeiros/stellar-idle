@@ -79,6 +79,7 @@ function formatDuration(seconds: number): string {
 export class UIManager {
   private crewList = document.getElementById('crew-list')!;
   private upgradeList = document.getElementById('upgrade-list')!;
+  private upgradeEmpty = document.getElementById('upgrade-empty')!;
   private resCredits = document.querySelector('#res-credits .value')!;
   private resCrystals = document.querySelector('#res-crystals .value')!;
   private resDps = document.querySelector('#res-dps .value')!;
@@ -397,18 +398,22 @@ export class UIManager {
       }
     }
 
+    let affordableUpgradeCount = 0;
     for (const upgrade of UPGRADE_TEMPLATES) {
       const level = getUpgradeLevel(state, upgrade.id);
       const cost = getUpgradeCost(upgrade.id, level);
+      const canAfford = state.credits >= cost;
       const levelEl = this.upgradeList.querySelector(`[data-upgrade-level="${upgrade.id}"]`);
       const costEl = this.upgradeList.querySelector(`[data-upgrade-cost="${upgrade.id}"]`);
       const btn = this.upgradeList.querySelector<HTMLButtonElement>(`[data-upgrade="${upgrade.id}"]`);
       const card = this.upgradeList.querySelector<HTMLElement>(`[data-upgrade-card="${upgrade.id}"]`);
       if (levelEl) levelEl.textContent = String(level);
       if (costEl) costEl.textContent = formatNumber(cost);
-      if (btn) btn.disabled = state.credits < cost;
-      if (card) card.classList.toggle('hidden', state.credits < cost);
+      if (btn) btn.disabled = !canAfford;
+      if (card) card.classList.toggle('hidden', !canAfford);
+      if (canAfford) affordableUpgradeCount += 1;
     }
+    this.upgradeEmpty.classList.toggle('hidden', affordableUpgradeCount > 0);
 
     const gain = estimatePrestigeGain(state);
     this.prestigeGain.textContent = `+${gain}`;

@@ -43,14 +43,16 @@ export function getCreditReward(state: GameState): number {
   const scannerBonus = 1 + getUpgradeTemplate('scanner').effectPerLevel * scannerLevel;
   const prestige = getPrestigeMultiplier(state);
   const waveBonus = 1 + (state.combat.wave - 1) * 0.05;
-  return Math.floor(12 * zone.creditMultiplier * scannerBonus * prestige * waveBonus);
+  const bossBonus = state.combat.isBoss ? 3 : 1;
+  return Math.floor(12 * zone.creditMultiplier * scannerBonus * prestige * waveBonus * bossBonus);
 }
 
 export function getXpReward(state: GameState): number {
   const trainingLevel = getUpgradeLevel(state, 'training');
   const trainingBonus = 1 + getUpgradeTemplate('training').effectPerLevel * trainingLevel;
   const prestige = getPrestigeMultiplier(state);
-  return Math.floor(8 * trainingBonus * prestige);
+  const bossBonus = state.combat.isBoss ? 3 : 1;
+  return Math.floor(8 * trainingBonus * prestige * bossBonus);
 }
 
 export function xpToLevel(level: number): number {

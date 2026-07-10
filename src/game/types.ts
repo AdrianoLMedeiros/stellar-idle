@@ -33,6 +33,7 @@ export interface ZoneTemplate {
   enemyHpMultiplier: number;
   creditMultiplier: number;
   enemies: EnemyTemplate[];
+  boss: EnemyTemplate;
 }
 
 export interface UpgradeTemplate {
@@ -60,6 +61,7 @@ export interface CombatState {
   enemySprite: EnemyTemplate['sprite'];
   enemyColor: string;
   enemyAccent: string;
+  isBoss: boolean;
 }
 
 export interface GameState {

@@ -147,7 +147,7 @@ export class UIManager {
     this.resDps.textContent = formatNumber(getFleetDps(state));
 
     this.zoneLabel.textContent = `${zone.name} — ${zone.description}`;
-    this.enemyName.textContent = state.combat.enemyName;
+    this.enemyName.textContent = state.combat.isBoss ? `BOSS: ${state.combat.enemyName}` : state.combat.enemyName;
     this.enemyHp.textContent = `${formatNumber(state.combat.enemyHp)} / ${formatNumber(state.combat.enemyMaxHp)}`;
     this.waveLabel.textContent = String(state.combat.wave);
 
@@ -211,14 +211,18 @@ export class UIManager {
     const waveInArea = ((state.combat.wave - 1) % WAVES_PER_AREA) + 1;
     const areaProgress = Math.min(100, (waveInArea / WAVES_PER_AREA) * 100);
 
-    this.areaProgressLabel.textContent = `Onda ${waveInArea} / ${WAVES_PER_AREA}`;
+    this.areaProgressLabel.textContent = state.combat.isBoss
+      ? `BOSS ${waveInArea} / ${WAVES_PER_AREA}`
+      : `Onda ${waveInArea} / ${WAVES_PER_AREA}`;
     this.areaProgressFill.style.width = `${areaProgress}%`;
+    this.areaProgressFill.classList.toggle('boss-alert', state.combat.isBoss);
 
     this.zoneRoute.querySelectorAll<HTMLElement>('[data-zone-step]').forEach((step) => {
       const zoneId = Number(step.dataset.zoneStep);
       step.classList.toggle('completed', zoneId < state.combat.zoneId);
       step.classList.toggle('current', zoneId === state.combat.zoneId);
       step.classList.toggle('locked', zoneId > state.combat.zoneId);
+      step.classList.toggle('boss-alert', zoneId === state.combat.zoneId && state.combat.isBoss);
     });
   }
 }

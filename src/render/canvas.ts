@@ -41,6 +41,9 @@ export class BattleRenderer {
     ctx.fillStyle = 'rgba(61, 232, 255, 0.12)';
     ctx.font = '600 14px Orbitron, sans-serif';
     ctx.fillText(zone.name, 20, 28);
+    if (state.combat.isBoss) {
+      this.drawBossWarning();
+    }
 
     const heroPositions = getHeroPositions();
     state.heroes.forEach((hero, index) => {
@@ -58,6 +61,9 @@ export class BattleRenderer {
     });
 
     const enemyBob = Math.sin(this.time * 2.5) * 4;
+    if (state.combat.isBoss) {
+      this.drawBossAura(getEnemyPosition().x, getEnemyPosition().y + enemyBob);
+    }
     drawEnemySprite(
       ctx,
       getEnemyPosition().x,
@@ -91,5 +97,29 @@ export class BattleRenderer {
     this.damageEvents = this.damageEvents
       .map((e) => ({ ...e, life: e.life - deltaSeconds }))
       .filter((e) => e.life > 0);
+  }
+
+  private drawBossWarning(): void {
+    const pulse = 0.45 + Math.sin(this.time * 5) * 0.15;
+    this.ctx.save();
+    this.ctx.fillStyle = `rgba(255, 92, 122, ${pulse})`;
+    this.ctx.font = '700 13px Orbitron, sans-serif';
+    this.ctx.fillText('ALERTA DE CHEFE', 20, 50);
+    this.ctx.restore();
+  }
+
+  private drawBossAura(x: number, y: number): void {
+    const radius = 46 + Math.sin(this.time * 4) * 5;
+    const gradient = this.ctx.createRadialGradient(x, y, 10, x, y, radius);
+    gradient.addColorStop(0, 'rgba(255, 92, 122, 0.24)');
+    gradient.addColorStop(0.55, 'rgba(255, 209, 102, 0.12)');
+    gradient.addColorStop(1, 'rgba(255, 92, 122, 0)');
+
+    this.ctx.save();
+    this.ctx.fillStyle = gradient;
+    this.ctx.beginPath();
+    this.ctx.arc(x, y, radius, 0, Math.PI * 2);
+    this.ctx.fill();
+    this.ctx.restore();
   }
 }

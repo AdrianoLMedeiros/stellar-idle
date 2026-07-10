@@ -4,6 +4,8 @@ import { getZone } from '../data/zones';
 import type { CombatState, GameState, HeroState } from './types';
 
 const BASE_ENEMY_HP = 40;
+const BOSS_EVERY_WAVES = 10;
+const BOSS_HP_MULTIPLIER = 4.5;
 
 export function createInitialHeroes(): HeroState[] {
   return HERO_TEMPLATES.map((hero) => ({
@@ -24,8 +26,10 @@ export function createInitialUpgrades() {
 export function createEnemyForWave(zoneId: number, wave: number): CombatState {
   const zone = getZone(zoneId);
   const enemyIndex = (wave - 1) % zone.enemies.length;
-  const enemy = zone.enemies[enemyIndex];
-  const hpScale = zone.enemyHpMultiplier * Math.pow(1.12, wave - 1);
+  const isBoss = wave % BOSS_EVERY_WAVES === 0;
+  const enemy = isBoss ? zone.boss : zone.enemies[enemyIndex];
+  const bossScale = isBoss ? BOSS_HP_MULTIPLIER : 1;
+  const hpScale = zone.enemyHpMultiplier * Math.pow(1.12, wave - 1) * bossScale;
   const maxHp = Math.floor(BASE_ENEMY_HP * hpScale);
 
   return {
@@ -38,6 +42,7 @@ export function createEnemyForWave(zoneId: number, wave: number): CombatState {
     enemySprite: enemy.sprite,
     enemyColor: enemy.color,
     enemyAccent: enemy.accent,
+    isBoss,
   };
 }
 

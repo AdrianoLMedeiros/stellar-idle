@@ -225,6 +225,18 @@ body {
   border-color: var(--gold);
 }
 
+.zone-step.boss-alert {
+  border-color: rgba(255, 92, 122, 0.75);
+  background: linear-gradient(135deg, rgba(255, 92, 122, 0.2), rgba(255, 209, 102, 0.1));
+  box-shadow: 0 0 20px rgba(255, 92, 122, 0.12);
+}
+
+.zone-step.boss-alert .zone-step-node {
+  color: white;
+  background: var(--danger);
+  border-color: var(--danger);
+}
+
 .zone-step.locked {
   opacity: 0.55;
 }
@@ -243,6 +255,10 @@ body {
   border-radius: inherit;
   background: linear-gradient(90deg, var(--gold), var(--cyan));
   transition: width 0.2s ease;
+}
+
+.area-progress-bar > div.boss-alert {
+  background: linear-gradient(90deg, var(--danger), var(--gold));
 }
 
 .battle-stats {

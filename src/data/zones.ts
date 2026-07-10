@@ -11,6 +11,7 @@ export const ZONES: ZoneTemplate[] = [
       { name: 'Drone de Patrulha', color: '#5a6b8a', accent: '#9eb4d8', sprite: 'drone' },
       { name: 'Scanner Hostil', color: '#4d5f7a', accent: '#7fd0ff', sprite: 'drone' },
     ],
+    boss: { name: 'Sentinela Órbita-7', color: '#334155', accent: '#3de8ff', sprite: 'boss' },
   },
   {
     id: 2,
@@ -22,6 +23,7 @@ export const ZONES: ZoneTemplate[] = [
       { name: 'Raider Xeno', color: '#8b5cf6', accent: '#d8b4fe', sprite: 'alien' },
       { name: 'Stalker Biomecânico', color: '#6d28d9', accent: '#c4b5fd', sprite: 'alien' },
     ],
+    boss: { name: 'Matriarca do Cinturão', color: '#7c3aed', accent: '#ff4fd8', sprite: 'boss' },
   },
   {
     id: 3,
@@ -33,6 +35,7 @@ export const ZONES: ZoneTemplate[] = [
       { name: 'Mech Corrompido', color: '#ef4444', accent: '#fca5a5', sprite: 'mech' },
       { name: 'Titã de Ferro', color: '#b91c1c', accent: '#fecaca', sprite: 'mech' },
     ],
+    boss: { name: 'Colosso Kryon', color: '#991b1b', accent: '#ffd166', sprite: 'boss' },
   },
   {
     id: 4,
@@ -44,6 +47,7 @@ export const ZONES: ZoneTemplate[] = [
       { name: 'Guardião Quântico', color: '#06b6d4', accent: '#a5f3fc', sprite: 'boss' },
       { name: 'Arconte Sintético', color: '#0891b2', accent: '#67e8f9', sprite: 'boss' },
     ],
+    boss: { name: 'Singularidade Prime', color: '#0e7490', accent: '#ffffff', sprite: 'boss' },
   },
 ];
 

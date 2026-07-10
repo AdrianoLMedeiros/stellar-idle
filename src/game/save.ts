@@ -1,4 +1,4 @@
-import { createInitialState } from './state';
+import { createEnemyForWave, createInitialState } from './state';
 import type { GameState } from './types';
 
 const SAVE_KEY = 'stellar-idle-rpg-save-v1';
@@ -15,8 +15,17 @@ export function loadGame(): GameState {
 }
 
 function normalizeSave(state: GameState): GameState {
+  const combat = state.combat.isBoss === undefined
+    ? createEnemyForWave(state.combat.zoneId, state.combat.wave)
+    : state.combat;
+  if (state.combat.isBoss === undefined) {
+    const hpRatio = state.combat.enemyHp / Math.max(1, state.combat.enemyMaxHp);
+    combat.enemyHp = Math.max(1, Math.floor(combat.enemyMaxHp * hpRatio));
+  }
+
   return {
     ...state,
+    combat,
     heroes: state.heroes.map((hero) => ({
       ...hero,
       xp: hero.xp ?? 0,

@@ -39,7 +39,9 @@ body {
 }
 
 #app {
-  max-width: 1280px;
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
   margin: 0 auto;
   padding: 16px;
 }
@@ -108,7 +110,8 @@ body {
 
 .layout {
   display: grid;
-  grid-template-columns: 1.4fr 1fr;
+  grid-template-columns: minmax(280px, 0.8fr) minmax(560px, 1.8fr) minmax(340px, 1fr);
+  align-items: start;
   gap: 16px;
 }
 
@@ -142,6 +145,7 @@ body {
   display: block;
   width: 100%;
   height: auto;
+  min-height: 360px;
   background: linear-gradient(180deg, #0a1222 0%, #050a12 100%);
 }
 
@@ -275,10 +279,24 @@ body {
   background: linear-gradient(90deg, var(--danger), #ff9b6a);
 }
 
-.side-panels {
+.left-panels,
+.right-panels {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-width: 0;
+}
+
+.battle-panel {
+  min-width: 0;
+}
+
+@media (min-width: 961px) {
+  .left-panels,
+  .right-panels {
+    position: sticky;
+    top: 16px;
+  }
 }
 
 .crew-list,
@@ -292,7 +310,7 @@ body {
 .crew-card,
 .upgrade-card {
   display: grid;
-  grid-template-columns: 56px 1fr auto;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
   gap: 10px;
   align-items: center;
   padding: 10px;
@@ -416,7 +434,7 @@ body {
 
 .command-stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr;
   gap: 10px;
 }
 
@@ -498,14 +516,68 @@ body {
     grid-template-columns: 1fr;
   }
 
+  .battle-panel {
+    order: 1;
+  }
+
+  .left-panels {
+    order: 2;
+  }
+
+  .right-panels {
+    order: 3;
+  }
+
   .top-bar {
     flex-direction: column;
     align-items: flex-start;
   }
 }
 
+@media (max-width: 1280px) and (min-width: 961px) {
+  #app {
+    padding: 12px;
+  }
+
+  .layout {
+    grid-template-columns: minmax(240px, 0.78fr) minmax(480px, 1.65fr) minmax(300px, 1fr);
+    gap: 12px;
+  }
+
+  .crew-card,
+  .upgrade-card {
+    grid-template-columns: 48px minmax(0, 1fr);
+  }
+
+  .crew-meta,
+  .btn.upgrade {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .crew-sprite,
+  .upgrade-icon {
+    width: 48px;
+    height: 48px;
+  }
+}
+
 @media (max-width: 640px) {
   .zone-route {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #battle-canvas {
+    min-height: 260px;
+  }
+
+  .battle-stats,
+  .resources {
+    grid-template-columns: 1fr;
+  }
+
+  .resources {
+    display: grid;
+    width: 100%;
   }
 }

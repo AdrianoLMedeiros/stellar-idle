@@ -36,6 +36,43 @@
       </header>
 
       <main class="layout">
+        <aside class="left-panels">
+          <section class="panel crew-panel">
+            <div class="panel-header">
+              <h2>Tripulação</h2>
+              <p>4 heróis atacam automaticamente</p>
+            </div>
+            <div id="crew-list" class="crew-list"></div>
+          </section>
+
+          <section class="panel command-panel">
+            <div class="panel-header">
+              <h2>Comando</h2>
+              <p>Operações da frota e dados da campanha</p>
+            </div>
+            <div class="command-body">
+              <div class="command-stats">
+                <div>
+                  <span class="muted">Vitórias</span>
+                  <strong id="total-defeated">0</strong>
+                </div>
+                <div>
+                  <span class="muted">Saltos</span>
+                  <strong id="prestige-count">0</strong>
+                </div>
+                <div>
+                  <span class="muted">Último save</span>
+                  <strong id="last-save">agora</strong>
+                </div>
+              </div>
+              <div class="command-actions">
+                <button id="save-btn" class="btn secondary">Salvar</button>
+                <button id="reset-btn" class="btn danger">Resetar</button>
+              </div>
+            </div>
+          </section>
+        </aside>
+
         <section class="battle-panel panel">
           <div class="panel-header">
             <h2>Campo de Batalha</h2>
@@ -71,48 +108,13 @@
           </div>
         </section>
 
-        <aside class="side-panels">
-          <section class="panel crew-panel">
-            <div class="panel-header">
-              <h2>Tripulação</h2>
-              <p>4 heróis atacam automaticamente</p>
-            </div>
-            <div id="crew-list" class="crew-list"></div>
-          </section>
-
+        <aside class="right-panels">
           <section class="panel upgrades-panel">
             <div class="panel-header">
               <h2>Melhorias da Nave</h2>
               <p>Gaste créditos para evoluir</p>
             </div>
             <div id="upgrade-list" class="upgrade-list"></div>
-          </section>
-
-          <section class="panel command-panel">
-            <div class="panel-header">
-              <h2>Comando</h2>
-              <p>Operações da frota e dados da campanha</p>
-            </div>
-            <div class="command-body">
-              <div class="command-stats">
-                <div>
-                  <span class="muted">Vitórias</span>
-                  <strong id="total-defeated">0</strong>
-                </div>
-                <div>
-                  <span class="muted">Saltos</span>
-                  <strong id="prestige-count">0</strong>
-                </div>
-                <div>
-                  <span class="muted">Último save</span>
-                  <strong id="last-save">agora</strong>
-                </div>
-              </div>
-              <div class="command-actions">
-                <button id="save-btn" class="btn secondary">Salvar</button>
-                <button id="reset-btn" class="btn danger">Resetar</button>
-              </div>
-            </div>
           </section>
 
           <section class="panel prestige-panel">

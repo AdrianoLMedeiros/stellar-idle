@@ -7,6 +7,7 @@
 - Ações táticas acionáveis durante o combate: reparo, barreira, sobrecarga e varredura.
 - Cooldowns e efeitos temporários persistidos no save local.
 - Passadiço operacional com efeitos ativos e prontidão de oficiais/ações táticas.
+- Foco operacional do Passadiço com posturas equilibrada, ofensiva, defensiva e exploração.
 
 ## 0.1.0-alpha.1
 

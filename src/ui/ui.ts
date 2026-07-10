@@ -1,5 +1,6 @@
 import { getOfficerAbility } from '../data/abilities';
 import { HERO_TEMPLATES } from '../data/heroes';
+import { OPERATIONAL_FOCUSES, getOperationalFocus } from '../data/operationalFocus';
 import { getOfficerSkills } from '../data/skills';
 import { STORE_ITEMS } from '../data/store';
 import { TACTICAL_ACTIONS, getTacticalAction } from '../data/tacticalActions';
@@ -119,6 +120,7 @@ export class UIManager {
   private bridgeHullBar = document.getElementById('bridge-hull-bar')!;
   private bridgeShieldBar = document.getElementById('bridge-shield-bar')!;
   private bridgeWeaponBar = document.getElementById('bridge-weapon-bar')!;
+  private bridgeFocus = document.getElementById('bridge-focus')!;
   private bridgeEffects = document.getElementById('bridge-effects')!;
   private bridgeReadiness = document.getElementById('bridge-readiness')!;
   private bridgeStations = document.getElementById('bridge-stations')!;
@@ -154,6 +156,7 @@ export class UIManager {
     private onUnlockSkill: (heroId: string, skillId: string) => void,
     private onActivateAbility: (heroId: string) => void,
     private onActivateTacticalAction: (actionId: string) => void,
+    private onSetOperationalFocus: (focusId: string) => void,
     private onClaimStoreItem: (itemId: string) => void,
     private onPrestige: () => void,
     private onSave: () => void,
@@ -201,6 +204,7 @@ export class UIManager {
     this.resetBtn.addEventListener('click', () => this.confirmReset());
     this.buildStaticLists();
     this.buildTacticalActions();
+    this.buildBridgeFocus();
     this.buildZoneRoute();
     this.buildStoreList();
     this.buildBridgeStations();
@@ -294,6 +298,22 @@ export class UIManager {
       btn.addEventListener('click', () => {
         const actionId = btn.dataset.tacticalAction;
         if (actionId) this.onActivateTacticalAction(actionId);
+      });
+    });
+  }
+
+  private buildBridgeFocus(): void {
+    this.bridgeFocus.innerHTML = OPERATIONAL_FOCUSES.map((focus) => `
+      <button class="bridge-focus-btn" data-bridge-focus="${focus.id}" title="${focus.description}">
+        <strong>${focus.shortName}</strong>
+        <span>${focus.description}</span>
+      </button>
+    `).join('');
+
+    this.bridgeFocus.querySelectorAll<HTMLButtonElement>('[data-bridge-focus]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const focusId = btn.dataset.bridgeFocus;
+        if (focusId) this.onSetOperationalFocus(focusId);
       });
     });
   }
@@ -679,6 +699,7 @@ export class UIManager {
     this.bridgeHullBar.style.width = `${Math.max(0, hullPercent)}%`;
     this.bridgeShieldBar.style.width = `${Math.max(0, shieldPercent)}%`;
     this.bridgeWeaponBar.style.width = `${weaponReadiness}%`;
+    this.updateBridgeFocus(state);
     this.bridgeEffects.innerHTML = this.renderBridgeEffects(state);
     this.bridgeReadiness.innerHTML = this.renderBridgeReadiness(state);
 
@@ -699,6 +720,15 @@ export class UIManager {
       if (alertEl) alertEl.classList.toggle('hidden', !hasAvailableSkill);
       if (stationEl) stationEl.classList.toggle('has-upgrade', hasAvailableSkill);
     }
+  }
+
+  private updateBridgeFocus(state: GameState): void {
+    const focus = getOperationalFocus(state.operationalFocusId);
+    this.bridgeFocus.querySelectorAll<HTMLButtonElement>('[data-bridge-focus]').forEach((btn) => {
+      const isActive = btn.dataset.bridgeFocus === focus.id;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-pressed', String(isActive));
+    });
   }
 
   private renderBridgeEffects(state: GameState): string {

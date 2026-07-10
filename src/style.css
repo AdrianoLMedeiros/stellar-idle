@@ -1042,6 +1042,92 @@ body {
   background: linear-gradient(90deg, var(--gold), var(--success));
 }
 
+.bridge-ops {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.bridge-ops > div {
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(18, 30, 53, 0.72);
+}
+
+.bridge-section-title {
+  margin-bottom: 8px;
+}
+
+.bridge-section-title .muted {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.bridge-effect-list,
+.bridge-readiness-list {
+  display: grid;
+  gap: 8px;
+}
+
+.bridge-effect-chip,
+.bridge-readiness-item {
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid rgba(61, 232, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(5, 10, 18, 0.46);
+}
+
+.bridge-effect-chip {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.bridge-effect-chip strong,
+.bridge-readiness-item strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  color: var(--cyan);
+}
+
+.bridge-effect-chip span,
+.bridge-readiness-item span,
+.bridge-readiness-item small,
+.bridge-empty {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.bridge-readiness-list {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.bridge-readiness-item {
+  display: grid;
+  gap: 3px;
+}
+
+.bridge-readiness-item.ready {
+  border-color: rgba(92, 255, 177, 0.32);
+}
+
+.bridge-readiness-item.ready strong {
+  color: var(--success);
+}
+
+.bridge-readiness-item.cooling-down {
+  opacity: 0.78;
+}
+
 .bridge-stations {
   position: relative;
   display: grid;
@@ -1681,11 +1767,16 @@ body {
 
   .bridge-window,
   .bridge-systems,
+  .bridge-ops,
   .hero-detail-stats,
   .hero-contribution,
   .store-card,
   .hero-skill-card {
     grid-template-columns: 1fr;
+  }
+
+  .bridge-readiness-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .bridge-stations {

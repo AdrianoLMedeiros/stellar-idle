@@ -19,6 +19,7 @@
           <span class="brand-icon">✦</span>
           <h1>Stellar Idle RPG</h1>
         </div>
+        <button id="command-toggle" class="btn secondary command-toggle">Comando</button>
         <div class="resources">
           <div class="resource" id="res-credits">
             <span class="label">Créditos</span>
@@ -84,33 +85,6 @@
               <p>Oficiais potencializam os sistemas da nave</p>
             </div>
             <div id="crew-list" class="crew-list"></div>
-          </section>
-
-          <section class="panel command-panel">
-            <div class="panel-header">
-              <h2>Comando</h2>
-              <p>Operações da frota e dados da campanha</p>
-            </div>
-            <div class="command-body">
-              <div class="command-stats">
-                <div>
-                  <span class="muted">Vitórias</span>
-                  <strong id="total-defeated">0</strong>
-                </div>
-                <div>
-                  <span class="muted">Saltos</span>
-                  <strong id="prestige-count">0</strong>
-                </div>
-                <div>
-                  <span class="muted">Último save</span>
-                  <strong id="last-save">agora</strong>
-                </div>
-              </div>
-              <div class="command-actions">
-                <button id="save-btn" class="btn secondary">Salvar</button>
-                <button id="reset-btn" class="btn danger">Resetar</button>
-              </div>
-            </div>
           </section>
         </aside>
 
@@ -191,6 +165,38 @@
         <span id="status-message">Inicializando sistemas...</span>
         <span id="offline-banner" class="offline-banner hidden"></span>
       </footer>
+
+      <div id="command-overlay" class="command-overlay hidden" aria-hidden="true">
+        <section class="panel command-dialog" role="dialog" aria-modal="true" aria-labelledby="command-title">
+          <div class="panel-header command-dialog-header">
+            <div>
+              <h2 id="command-title">Comando</h2>
+              <p>Operações da frota e dados da campanha</p>
+            </div>
+            <button id="command-close" class="btn secondary">Fechar</button>
+          </div>
+          <div class="command-body">
+            <div class="command-stats">
+              <div>
+                <span class="muted">Vitórias</span>
+                <strong id="total-defeated">0</strong>
+              </div>
+              <div>
+                <span class="muted">Saltos</span>
+                <strong id="prestige-count">0</strong>
+              </div>
+              <div>
+                <span class="muted">Último save</span>
+                <strong id="last-save">agora</strong>
+              </div>
+            </div>
+            <div class="command-actions">
+              <button id="save-btn" class="btn secondary">Salvar</button>
+              <button id="reset-btn" class="btn danger">Resetar</button>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

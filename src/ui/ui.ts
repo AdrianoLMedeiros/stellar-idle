@@ -73,6 +73,9 @@ export class UIManager {
   private totalDefeated = document.getElementById('total-defeated')!;
   private prestigeCount = document.getElementById('prestige-count')!;
   private lastSave = document.getElementById('last-save')!;
+  private commandToggle = document.getElementById('command-toggle') as HTMLButtonElement;
+  private commandOverlay = document.getElementById('command-overlay')!;
+  private commandClose = document.getElementById('command-close') as HTMLButtonElement;
   private saveBtn = document.getElementById('save-btn') as HTMLButtonElement;
   private resetBtn = document.getElementById('reset-btn') as HTMLButtonElement;
   private statusMessage = document.getElementById('status-message')!;
@@ -85,6 +88,14 @@ export class UIManager {
     private onReset: () => void,
   ) {
     this.prestigeBtn.addEventListener('click', () => this.onPrestige());
+    this.commandToggle.addEventListener('click', () => this.openCommandOverlay());
+    this.commandClose.addEventListener('click', () => this.closeCommandOverlay());
+    this.commandOverlay.addEventListener('click', (event) => {
+      if (event.target === this.commandOverlay) this.closeCommandOverlay();
+    });
+    window.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') this.closeCommandOverlay();
+    });
     this.saveBtn.addEventListener('click', () => this.onSave());
     this.resetBtn.addEventListener('click', () => this.confirmReset());
     this.buildStaticLists();
@@ -226,6 +237,17 @@ export class UIManager {
     const confirmed = window.confirm('Resetar todo o progresso salvo e começar uma nova campanha?');
     if (!confirmed) return;
     this.onReset();
+    this.closeCommandOverlay();
+  }
+
+  private openCommandOverlay(): void {
+    this.commandOverlay.classList.remove('hidden');
+    this.commandOverlay.setAttribute('aria-hidden', 'false');
+  }
+
+  private closeCommandOverlay(): void {
+    this.commandOverlay.classList.add('hidden');
+    this.commandOverlay.setAttribute('aria-hidden', 'true');
   }
 
   private updateAreaProgress(state: GameState): void {

@@ -20,7 +20,7 @@
           <h1>Stellar Idle RPG</h1>
         </div>
         <div class="top-actions">
-          <button id="bridge-toggle" class="btn secondary command-toggle">Ponte</button>
+          <button id="bridge-toggle" class="btn secondary command-toggle">Passadiço</button>
           <button id="store-toggle" class="btn secondary command-toggle">Suprimentos</button>
           <button id="command-toggle" class="btn secondary command-toggle">Comando</button>
         </div>
@@ -93,37 +93,33 @@
         </aside>
 
         <section class="battle-panel panel">
-          <div class="panel-header">
-            <h2>Campo de Batalha</h2>
-            <p id="zone-label">Setor Desconhecido</p>
-          </div>
           <canvas id="battle-canvas" width="720" height="320"></canvas>
           <div class="zone-progress">
             <div class="zone-progress-header">
-              <span class="muted">Progresso da Área</span>
+              <span class="muted">Navegação</span>
               <strong id="area-progress-label">Onda 1 / 10</strong>
+            </div>
+            <div class="battle-stats">
+              <div>
+                <span class="muted">Inimigo</span>
+                <strong id="enemy-name">—</strong>
+              </div>
+              <div>
+                <span class="muted">HP</span>
+                <strong id="enemy-hp">0 / 0</strong>
+              </div>
+              <div>
+                <span class="muted">Onda</span>
+                <strong id="wave-label">1</strong>
+              </div>
+            </div>
+            <div class="progress-bar">
+              <div id="enemy-hp-bar" class="progress-fill enemy"></div>
             </div>
             <div id="zone-route" class="zone-route" aria-label="Progresso entre áreas"></div>
             <div class="area-progress-bar">
               <div id="area-progress-fill"></div>
             </div>
-          </div>
-          <div class="battle-stats">
-            <div>
-              <span class="muted">Inimigo</span>
-              <strong id="enemy-name">—</strong>
-            </div>
-            <div>
-              <span class="muted">HP</span>
-              <strong id="enemy-hp">0 / 0</strong>
-            </div>
-            <div>
-              <span class="muted">Onda</span>
-              <strong id="wave-label">1</strong>
-            </div>
-          </div>
-          <div class="progress-bar">
-            <div id="enemy-hp-bar" class="progress-fill enemy"></div>
           </div>
         </section>
 
@@ -196,7 +192,10 @@
             </div>
             <div class="command-actions">
               <button id="save-btn" class="btn secondary">Salvar</button>
+              <button id="export-save-btn" class="btn secondary">Exportar save</button>
+              <button id="import-save-btn" class="btn secondary">Importar save</button>
               <button id="reset-btn" class="btn danger">Resetar</button>
+              <input id="import-save-file" class="hidden" type="file" accept="application/json,.json" />
             </div>
           </div>
         </section>
@@ -226,7 +225,7 @@
         <section class="panel bridge-dialog" role="dialog" aria-modal="true" aria-labelledby="bridge-title">
           <div class="panel-header bridge-dialog-header">
             <div>
-              <h2 id="bridge-title">Ponte da Nave</h2>
+              <h2 id="bridge-title">Passadiço da Nave</h2>
               <p id="bridge-subtitle">Estações de comando e leitura tática da tripulação</p>
             </div>
             <button id="bridge-close" class="btn secondary">Fechar</button>

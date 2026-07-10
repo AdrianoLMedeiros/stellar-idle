@@ -18,6 +18,37 @@ export interface HeroState {
   xp: number;
   skillPoints: number;
   unlockedSkills: string[];
+  abilityCooldown: number;
+}
+
+export type AbilityEffectType = 'weapon_speed';
+
+export interface AbilityEffect {
+  type: AbilityEffectType;
+  value: number;
+}
+
+export type OfficerAbilityKind = 'timed_effect' | 'instant_damage' | 'restore_shield' | 'repair_hull';
+
+export interface OfficerAbility {
+  id: string;
+  officerId: string;
+  name: string;
+  shortName: string;
+  description: string;
+  cooldown: number;
+  duration?: number;
+  kind: OfficerAbilityKind;
+  value: number;
+  effects?: AbilityEffect[];
+}
+
+export interface ActiveAbilityEffect {
+  id: string;
+  officerId: string;
+  name: string;
+  remaining: number;
+  effects: AbilityEffect[];
 }
 
 export type SkillEffectType =
@@ -148,6 +179,7 @@ export interface CombatState {
 }
 
 export interface GameState {
+  saveVersion: number;
   credits: number;
   quantumCrystals: number;
   prestigeCount: number;
@@ -155,6 +187,7 @@ export interface GameState {
   heroes: HeroState[];
   upgrades: UpgradeState[];
   premium: PremiumState;
+  activeAbilityEffects: ActiveAbilityEffect[];
   combat: CombatState;
   lastTick: number;
   lastSave: number;

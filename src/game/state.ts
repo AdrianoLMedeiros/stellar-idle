@@ -20,6 +20,7 @@ export function createInitialHeroes(): HeroState[] {
     xp: 0,
     skillPoints: 0,
     unlockedSkills: [],
+    abilityCooldown: 0,
   }));
 }
 
@@ -71,6 +72,7 @@ export function createEnemyForWave(zoneId: number, wave: number): CombatState {
 export function createInitialState(): GameState {
   const now = Date.now();
   return {
+    saveVersion: 2,
     credits: 0,
     quantumCrystals: 0,
     prestigeCount: 0,
@@ -78,6 +80,7 @@ export function createInitialState(): GameState {
     heroes: createInitialHeroes(),
     upgrades: createInitialUpgrades(),
     premium: createInitialPremiumState(),
+    activeAbilityEffects: [],
     combat: createEnemyForWave(1, 1),
     lastTick: now,
     lastSave: now,

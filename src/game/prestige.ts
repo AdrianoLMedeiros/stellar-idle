@@ -8,6 +8,7 @@ export function performPrestige(state: GameState): number {
   state.credits = 0;
   state.heroes = createInitialHeroes();
   state.upgrades = createInitialUpgrades();
+  state.activeAbilityEffects = [];
   state.combat = createEnemyForWave(1, 1);
   state.totalEnemiesDefeated = 0;
   return gain;

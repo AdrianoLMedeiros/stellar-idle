@@ -1,3 +1,4 @@
+import { getOfficerAbility } from '../data/abilities';
 import { HERO_TEMPLATES } from '../data/heroes';
 import { getOfficerSkills } from '../data/skills';
 import { STORE_ITEMS } from '../data/store';
@@ -81,7 +82,6 @@ export class UIManager {
   private resCredits = document.querySelector('#res-credits .value')!;
   private resCrystals = document.querySelector('#res-crystals .value')!;
   private resDps = document.querySelector('#res-dps .value')!;
-  private zoneLabel = document.getElementById('zone-label')!;
   private enemyName = document.getElementById('enemy-name')!;
   private enemyHp = document.getElementById('enemy-hp')!;
   private waveLabel = document.getElementById('wave-label')!;
@@ -134,6 +134,9 @@ export class UIManager {
   private heroDetailContribution = document.getElementById('hero-detail-contribution')!;
   private heroDetailSkills = document.getElementById('hero-detail-skills')!;
   private saveBtn = document.getElementById('save-btn') as HTMLButtonElement;
+  private exportSaveBtn = document.getElementById('export-save-btn') as HTMLButtonElement;
+  private importSaveBtn = document.getElementById('import-save-btn') as HTMLButtonElement;
+  private importSaveFile = document.getElementById('import-save-file') as HTMLInputElement;
   private resetBtn = document.getElementById('reset-btn') as HTMLButtonElement;
   private statusMessage = document.getElementById('status-message')!;
   private offlineBanner = document.getElementById('offline-banner')!;
@@ -144,9 +147,12 @@ export class UIManager {
   constructor(
     private onUpgrade: (id: string) => void,
     private onUnlockSkill: (heroId: string, skillId: string) => void,
+    private onActivateAbility: (heroId: string) => void,
     private onClaimStoreItem: (itemId: string) => void,
     private onPrestige: () => void,
     private onSave: () => void,
+    private onExportSave: () => void,
+    private onImportSave: (raw: string) => void,
     private onReset: () => void,
   ) {
     this.prestigeBtn.addEventListener('click', () => this.onPrestige());
@@ -183,6 +189,9 @@ export class UIManager {
       this.closeCommandOverlay();
     });
     this.saveBtn.addEventListener('click', () => this.onSave());
+    this.exportSaveBtn.addEventListener('click', () => this.onExportSave());
+    this.importSaveBtn.addEventListener('click', () => this.importSaveFile.click());
+    this.importSaveFile.addEventListener('change', () => this.importSelectedSave());
     this.resetBtn.addEventListener('click', () => this.confirmReset());
     this.buildStaticLists();
     this.buildZoneRoute();
@@ -209,6 +218,9 @@ export class UIManager {
           <div class="crew-meta">
             <span class="muted">Posto</span>
             <strong data-hero-station="${hero.id}">${CREW_STATIONS[hero.id] ?? hero.roleLabel}</strong>
+            <button class="btn secondary hero-ability-btn" data-hero-ability="${hero.id}">
+              ${getOfficerAbility(hero.id).shortName}
+            </button>
             <button class="btn secondary hero-info-btn" data-hero-open="${hero.id}">Info</button>
           </div>
         </article>
@@ -228,7 +240,7 @@ export class UIManager {
     this.upgradeList.innerHTML = UPGRADE_TEMPLATES.map((upgrade) => {
       const iconLabel = UPGRADE_ICON_LABELS[upgrade.id] ?? 'UP';
       return `
-        <article class="upgrade-card">
+        <article class="upgrade-card" data-upgrade-card="${upgrade.id}">
           <div class="upgrade-icon" aria-hidden="true">${iconLabel}</div>
           <div>
             <p class="upgrade-name">${upgrade.name}</p>
@@ -253,6 +265,13 @@ export class UIManager {
       btn.addEventListener('click', () => {
         const heroId = btn.dataset.heroOpen;
         if (heroId) this.openHeroOverlay(heroId);
+      });
+    });
+
+    this.crewList.querySelectorAll<HTMLButtonElement>('[data-hero-ability]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const heroId = btn.dataset.heroAbility;
+        if (heroId) this.onActivateAbility(heroId);
       });
     });
   }
@@ -329,13 +348,11 @@ export class UIManager {
 
   update(state: GameState): void {
     this.currentState = state;
-    const zone = getZone(state.combat.zoneId);
 
     this.resCredits.textContent = formatNumber(state.credits);
     this.resCrystals.textContent = formatNumber(state.quantumCrystals);
     this.resDps.textContent = formatNumber(getFleetDps(state));
 
-    this.zoneLabel.textContent = `${zone.name} — ${zone.description}`;
     this.enemyName.textContent = state.combat.isBoss ? `BOSS: ${state.combat.enemyName}` : state.combat.enemyName;
     this.enemyHp.textContent = `${formatNumber(state.combat.enemyHp)} / ${formatNumber(state.combat.enemyMaxHp)}`;
     this.waveLabel.textContent = String(state.combat.wave);
@@ -350,7 +367,9 @@ export class UIManager {
       const xpLabelEl = this.crewList.querySelector(`[data-hero-xp-label="${hero.id}"]`);
       const xpBarEl = this.crewList.querySelector<HTMLElement>(`[data-hero-xp-bar="${hero.id}"]`);
       const infoBtn = this.crewList.querySelector<HTMLButtonElement>(`[data-hero-open="${hero.id}"]`);
+      const abilityBtn = this.crewList.querySelector<HTMLButtonElement>(`[data-hero-ability="${hero.id}"]`);
       const nextLevelXp = xpToLevel(hero.level);
+      const ability = getOfficerAbility(hero.id);
       if (levelEl) levelEl.textContent = String(hero.level);
       if (xpLabelEl) {
         xpLabelEl.textContent = `XP ${formatNumber(hero.xp)} / ${formatNumber(nextLevelXp)} • PH ${hero.skillPoints}`;
@@ -367,6 +386,15 @@ export class UIManager {
           ? 'Habilidade disponivel para desbloquear'
           : 'Ver informacoes do oficial';
       }
+      if (abilityBtn) {
+        const cooldown = Math.ceil(hero.abilityCooldown ?? 0);
+        abilityBtn.disabled = cooldown > 0;
+        abilityBtn.classList.toggle('cooling-down', cooldown > 0);
+        abilityBtn.textContent = cooldown > 0 ? `${cooldown}s` : ability.shortName;
+        abilityBtn.title = cooldown > 0
+          ? `${ability.name} recarregando.`
+          : `${ability.name}: ${ability.description}`;
+      }
     }
 
     for (const upgrade of UPGRADE_TEMPLATES) {
@@ -375,9 +403,11 @@ export class UIManager {
       const levelEl = this.upgradeList.querySelector(`[data-upgrade-level="${upgrade.id}"]`);
       const costEl = this.upgradeList.querySelector(`[data-upgrade-cost="${upgrade.id}"]`);
       const btn = this.upgradeList.querySelector<HTMLButtonElement>(`[data-upgrade="${upgrade.id}"]`);
+      const card = this.upgradeList.querySelector<HTMLElement>(`[data-upgrade-card="${upgrade.id}"]`);
       if (levelEl) levelEl.textContent = String(level);
       if (costEl) costEl.textContent = formatNumber(cost);
       if (btn) btn.disabled = state.credits < cost;
+      if (card) card.classList.toggle('hidden', state.credits < cost);
     }
 
     const gain = estimatePrestigeGain(state);
@@ -411,6 +441,29 @@ export class UIManager {
     if (!confirmed) return;
     this.onReset();
     this.closeCommandOverlay();
+  }
+
+  private importSelectedSave(): void {
+    const file = this.importSaveFile.files?.[0];
+    this.importSaveFile.value = '';
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.addEventListener('load', () => {
+      const raw = typeof reader.result === 'string' ? reader.result : '';
+      if (!raw) {
+        this.setStatus('Arquivo de save vazio ou inválido.');
+        return;
+      }
+
+      try {
+        this.onImportSave(raw);
+        this.setStatus('Save importado com sucesso.');
+      } catch {
+        this.setStatus('Não foi possível importar este save.');
+      }
+    });
+    reader.readAsText(file);
   }
 
   private openCommandOverlay(): void {
@@ -476,6 +529,7 @@ export class UIManager {
       step.classList.toggle('current', zoneId === state.combat.zoneId);
       step.classList.toggle('locked', zoneId > state.combat.zoneId);
       step.classList.toggle('boss-alert', zoneId === state.combat.zoneId && state.combat.isBoss);
+      step.classList.toggle('hud-visible', zoneId === state.combat.zoneId || zoneId === state.combat.zoneId + 1);
     });
   }
 

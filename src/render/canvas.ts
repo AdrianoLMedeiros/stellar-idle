@@ -37,11 +37,12 @@ export class BattleRenderer {
     drawStarfield(ctx, this.width, this.height, Math.floor(this.time * 10));
 
     const zone = getZone(state.combat.zoneId);
+    const labelOrigin = this.getBattleLabelOrigin();
     ctx.fillStyle = 'rgba(61, 232, 255, 0.12)';
     ctx.font = '600 14px Orbitron, sans-serif';
-    ctx.fillText(zone.name, 20, 28);
+    ctx.fillText(zone.name, labelOrigin.x, labelOrigin.y);
     if (state.combat.isBoss) {
-      this.drawBossWarning();
+      this.drawBossWarning(labelOrigin.x, labelOrigin.y + 22);
     }
 
     const shipBob = Math.sin(this.time * 2.8) * 3;
@@ -99,12 +100,25 @@ export class BattleRenderer {
       .filter((e) => e.life > 0);
   }
 
-  private drawBossWarning(): void {
+  private getBattleLabelOrigin(): { x: number; y: number } {
+    const canvas = this.ctx.canvas;
+    const cssWidth = canvas.clientWidth || this.width;
+    const cssHeight = canvas.clientHeight || this.height;
+    const safeLeftPx = Math.min(360, cssWidth * 0.24);
+    const safeTopPx = Math.min(170, cssHeight * 0.18);
+
+    return {
+      x: Math.max(20, (safeLeftPx / cssWidth) * this.width),
+      y: Math.max(28, (safeTopPx / cssHeight) * this.height),
+    };
+  }
+
+  private drawBossWarning(x: number, y: number): void {
     const pulse = 0.45 + Math.sin(this.time * 5) * 0.15;
     this.ctx.save();
     this.ctx.fillStyle = `rgba(255, 92, 122, ${pulse})`;
     this.ctx.font = '700 13px Orbitron, sans-serif';
-    this.ctx.fillText('ALERTA DE CHEFE', 20, 50);
+    this.ctx.fillText('ALERTA DE CHEFE', x, y);
     this.ctx.restore();
   }
 

@@ -9,6 +9,7 @@ import {
   getShipWeaponInterval,
   getXpReward,
 } from './progression';
+import { tickOfficerAbilities } from './abilities';
 import { getPremiumMultiplier } from './monetization';
 import { createEnemyForWave } from './state';
 import type { CombatTickResult, DamageEvent, GameState, Projectile } from './types';
@@ -41,8 +42,13 @@ export function processCombatTick(state: GameState, deltaSeconds: number): Comba
   let killCount = 0;
   let retreatCount = 0;
 
+  tickOfficerAbilities(state, deltaSeconds);
   syncShipStats(state);
   regenerateShield(state, deltaSeconds);
+
+  if (state.combat.enemyHp <= 0) {
+    killCount += resolveEnemyDefeat(state);
+  }
 
   state.ship.weaponTimer += deltaSeconds;
   while (state.ship.weaponTimer >= getShipWeaponInterval(state)) {

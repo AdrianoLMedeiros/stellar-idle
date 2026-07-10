@@ -33,6 +33,14 @@ const ui = new UIManager(
       ui.setStatus('Habilidade indisponível para este oficial.');
     }
   },
+  (heroId) => {
+    const abilityName = loop.tryActivateOfficerAbility(heroId);
+    if (abilityName) {
+      ui.setStatus(`${abilityName} ativada.`);
+    } else {
+      ui.setStatus('Especial ainda em recarga.');
+    }
+  },
   (itemId) => {
     if (loop.tryClaimStoreItem(itemId)) {
       ui.setStatus('Suprimento ativado em modo dev.');
@@ -49,6 +57,20 @@ const ui = new UIManager(
   () => {
     loop.saveNow();
     ui.setStatus('Progresso salvo manualmente.');
+  },
+  () => {
+    const saveData = loop.exportSave();
+    const blob = new Blob([saveData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `stellar-idle-save-${new Date().toISOString().slice(0, 10)}.json`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+    ui.setStatus('Backup do save exportado.');
+  },
+  (raw) => {
+    loop.importSave(raw);
   },
   () => {
     loop.resetProgress();

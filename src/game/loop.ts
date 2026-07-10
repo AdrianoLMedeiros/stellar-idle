@@ -1,8 +1,9 @@
 import { applyOfflineProgress, processCombatTick } from './combat';
+import { activateOfficerAbility } from './abilities';
 import { grantStoreItem, pruneExpiredBoosts } from './monetization';
 import { buyUpgrade, unlockSkill } from './progression';
 import { performPrestige } from './prestige';
-import { loadGame, saveGame } from './save';
+import { exportSaveData, importSaveData, loadGame, saveGame } from './save';
 import { createInitialState } from './state';
 import type { CombatTickResult, GameState } from './types';
 
@@ -95,10 +96,29 @@ export class GameLoop {
     return ok;
   }
 
+  tryActivateOfficerAbility(heroId: string): string | null {
+    const abilityName = activateOfficerAbility(this.state, heroId);
+    if (abilityName) saveGame(this.state);
+    return abilityName;
+  }
+
   saveNow(): void {
     this.state.lastTick = Date.now();
     saveGame(this.state);
     this.lastSave = Date.now();
+  }
+
+  exportSave(): string {
+    this.saveNow();
+    return exportSaveData(this.state);
+  }
+
+  importSave(raw: string): void {
+    this.state = importSaveData(raw);
+    this.accumulator = 0;
+    this.lastFrame = performance.now();
+    this.lastSave = Date.now();
+    this.onTick(this.state, 0);
   }
 
   resetProgress(): void {

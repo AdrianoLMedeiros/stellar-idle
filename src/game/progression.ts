@@ -59,7 +59,12 @@ export function getShipWeaponInterval(state: GameState): number {
   const trainingLevel = getUpgradeLevel(state, 'training');
   const tacticalBonus = trainingLevel * 0.01;
   const skillSpeedBonus = getSkillEffectMultiplier(state, 'weapon_speed') - 1;
-  return Math.max(0.55, 1.35 * (1 - gunnerBonus - tacticalBonus - skillSpeedBonus));
+  const abilitySpeedBonus = (state.activeAbilityEffects ?? []).reduce((sum, activeEffect) => {
+    return sum + activeEffect.effects
+      .filter((effect) => effect.type === 'weapon_speed')
+      .reduce((effectSum, effect) => effectSum + effect.value, 0);
+  }, 0);
+  return Math.max(0.55, 1.35 * (1 - gunnerBonus - tacticalBonus - skillSpeedBonus - abilitySpeedBonus));
 }
 
 export function getFleetDps(state: GameState): number {

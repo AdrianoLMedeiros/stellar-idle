@@ -2,6 +2,7 @@ import { applyOfflineProgress, processCombatTick } from './combat';
 import { getHeroAttack, buyUpgrade } from './progression';
 import { performPrestige } from './prestige';
 import { loadGame, saveGame } from './save';
+import { createInitialState } from './state';
 import type { CombatTickResult, GameState } from './types';
 
 const TICK_RATE = 1 / 60;
@@ -78,6 +79,20 @@ export class GameLoop {
     const gain = performPrestige(this.state);
     saveGame(this.state);
     return gain;
+  }
+
+  saveNow(): void {
+    this.state.lastTick = Date.now();
+    saveGame(this.state);
+    this.lastSave = Date.now();
+  }
+
+  resetProgress(): void {
+    this.state = createInitialState();
+    this.accumulator = 0;
+    this.lastFrame = performance.now();
+    saveGame(this.state);
+    this.lastSave = Date.now();
   }
 
   getHeroAtk(heroId: string): number {

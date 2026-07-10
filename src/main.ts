@@ -29,6 +29,14 @@ const ui = new UIManager(
       ui.setStatus(`Salto Quântico concluído! +${gain} Cristais Quânticos.`);
     }
   },
+  () => {
+    loop.saveNow();
+    ui.setStatus('Progresso salvo manualmente.');
+  },
+  () => {
+    loop.resetProgress();
+    ui.setStatus('Novo comando iniciado. Progresso reiniciado.');
+  },
 );
 
 loop.onOffline = (kills, hours) => {
@@ -40,6 +48,5 @@ ui.setStatus('Sistemas online. A tripulação está em combate automático.');
 loop.start();
 
 window.addEventListener('beforeunload', () => {
-  const state = loop.getState();
-  state.lastTick = Date.now();
+  loop.saveNow();
 });

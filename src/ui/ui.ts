@@ -13,6 +13,15 @@ function formatNumber(value: number): string {
   return Math.floor(value).toLocaleString('pt-BR');
 }
 
+function formatRelativeSaveTime(timestamp: number): string {
+  const elapsedSeconds = Math.max(0, Math.floor((Date.now() - timestamp) / 1000));
+  if (elapsedSeconds < 5) return 'agora';
+  if (elapsedSeconds < 60) return `${elapsedSeconds}s`;
+  const elapsedMinutes = Math.floor(elapsedSeconds / 60);
+  if (elapsedMinutes < 60) return `${elapsedMinutes}min`;
+  return `${Math.floor(elapsedMinutes / 60)}h`;
+}
+
 export class UIManager {
   private crewList = document.getElementById('crew-list')!;
   private upgradeList = document.getElementById('upgrade-list')!;
@@ -27,11 +36,23 @@ export class UIManager {
   private prestigeGain = document.getElementById('prestige-gain')!;
   private prestigeBonus = document.getElementById('prestige-bonus')!;
   private prestigeBtn = document.getElementById('prestige-btn') as HTMLButtonElement;
+  private totalDefeated = document.getElementById('total-defeated')!;
+  private prestigeCount = document.getElementById('prestige-count')!;
+  private lastSave = document.getElementById('last-save')!;
+  private saveBtn = document.getElementById('save-btn') as HTMLButtonElement;
+  private resetBtn = document.getElementById('reset-btn') as HTMLButtonElement;
   private statusMessage = document.getElementById('status-message')!;
   private offlineBanner = document.getElementById('offline-banner')!;
 
-  constructor(private onUpgrade: (id: string) => void, private onPrestige: () => void) {
+  constructor(
+    private onUpgrade: (id: string) => void,
+    private onPrestige: () => void,
+    private onSave: () => void,
+    private onReset: () => void,
+  ) {
     this.prestigeBtn.addEventListener('click', () => this.onPrestige());
+    this.saveBtn.addEventListener('click', () => this.onSave());
+    this.resetBtn.addEventListener('click', () => this.confirmReset());
     this.buildStaticLists();
   }
 
@@ -135,6 +156,10 @@ export class UIManager {
     this.prestigeGain.textContent = `+${gain}`;
     this.prestigeBonus.textContent = `+${getPrestigeBonusPercent(state)}%`;
     this.prestigeBtn.disabled = !canPrestige(state);
+
+    this.totalDefeated.textContent = formatNumber(state.totalEnemiesDefeated);
+    this.prestigeCount.textContent = formatNumber(state.prestigeCount);
+    this.lastSave.textContent = formatRelativeSaveTime(state.lastSave);
   }
 
   setStatus(message: string): void {
@@ -148,5 +173,11 @@ export class UIManager {
     }
     this.offlineBanner.textContent = `Progresso offline: ${kills} vitórias em ${elapsedHours.toFixed(1)}h`;
     this.offlineBanner.classList.remove('hidden');
+  }
+
+  private confirmReset(): void {
+    const confirmed = window.confirm('Resetar todo o progresso salvo e começar uma nova campanha?');
+    if (!confirmed) return;
+    this.onReset();
   }
 }

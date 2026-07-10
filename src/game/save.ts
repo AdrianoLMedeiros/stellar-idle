@@ -1,4 +1,5 @@
-import { createEnemyForWave, createInitialState } from './state';
+import { createEnemyForWave, createInitialShip, createInitialState } from './state';
+import { getShipMaxHull, getShipMaxShield } from './progression';
 import type { GameState } from './types';
 
 const SAVE_KEY = 'stellar-idle-rpg-save-v1';
@@ -23,8 +24,18 @@ function normalizeSave(state: GameState): GameState {
     combat.enemyHp = Math.max(1, Math.floor(combat.enemyMaxHp * hpRatio));
   }
 
+  const ship = {
+    ...createInitialShip(),
+    ...state.ship,
+  };
+  ship.maxHull = getShipMaxHull({ ...state, ship });
+  ship.maxShield = getShipMaxShield({ ...state, ship });
+  ship.hull = Math.min(ship.maxHull, ship.hull ?? ship.maxHull);
+  ship.shield = Math.min(ship.maxShield, ship.shield ?? ship.maxShield);
+
   return {
     ...state,
+    ship,
     combat,
     heroes: state.heroes.map((hero) => ({
       ...hero,

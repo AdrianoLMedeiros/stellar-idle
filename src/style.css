@@ -277,6 +277,77 @@ body {
   text-transform: uppercase;
 }
 
+.ship-body {
+  padding: 14px 16px 16px;
+}
+
+.ship-meter + .ship-meter {
+  margin-top: 12px;
+}
+
+.ship-meter > div:first-child {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ship-meter strong,
+.ship-stats strong {
+  font-family: var(--font-display);
+  font-size: 0.86rem;
+}
+
+.ship-bar {
+  height: 8px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: #08111f;
+  overflow: hidden;
+}
+
+.ship-bar > div {
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  transition: width 0.18s ease;
+}
+
+.ship-bar.hull > div {
+  background: linear-gradient(90deg, var(--danger), #ff9b6a);
+}
+
+.ship-bar.shield > div {
+  background: linear-gradient(90deg, var(--cyan-dim), var(--cyan));
+}
+
+.ship-stats {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.ship-stats > div {
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-panel-alt);
+}
+
+.ship-stats .muted {
+  display: block;
+  color: var(--muted);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.ship-stats strong {
+  display: block;
+  margin-top: 2px;
+  color: var(--cyan);
+}
+
 .progress-bar {
   height: 8px;
   margin: 0 16px 16px;
@@ -548,6 +619,7 @@ body {
     flex-direction: column;
     align-items: flex-start;
   }
+
 }
 
 @media (max-width: 1280px) and (min-width: 961px) {
@@ -596,4 +668,5 @@ body {
     display: grid;
     width: 100%;
   }
+
 }

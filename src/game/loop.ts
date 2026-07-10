@@ -1,5 +1,5 @@
 import { applyOfflineProgress, processCombatTick } from './combat';
-import { getHeroAttack, buyUpgrade } from './progression';
+import { buyUpgrade } from './progression';
 import { performPrestige } from './prestige';
 import { loadGame, saveGame } from './save';
 import { createInitialState } from './state';
@@ -93,11 +93,5 @@ export class GameLoop {
     this.lastFrame = performance.now();
     saveGame(this.state);
     this.lastSave = Date.now();
-  }
-
-  getHeroAtk(heroId: string): number {
-    const hero = this.state.heroes.find((h) => h.id === heroId);
-    if (!hero) return 0;
-    return getHeroAttack(hero, this.state);
   }
 }

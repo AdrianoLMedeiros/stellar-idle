@@ -72,6 +72,56 @@ export function drawHeroSprite(
   ctx.restore();
 }
 
+export function drawShipSprite(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  shieldPercent: number,
+  bob: number,
+): void {
+  const py = y + bob;
+  ctx.save();
+  ctx.translate(x, py);
+
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.beginPath();
+  ctx.ellipse(0, 36, 48, 9, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  if (shieldPercent > 0.05) {
+    ctx.strokeStyle = `rgba(61, 232, 255, ${0.18 + shieldPercent * 0.35})`;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 58, 34, 0, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = '#1f3b68';
+  ctx.beginPath();
+  ctx.moveTo(54, 0);
+  ctx.lineTo(10, -24);
+  ctx.lineTo(-44, -16);
+  ctx.lineTo(-58, 0);
+  ctx.lineTo(-44, 16);
+  ctx.lineTo(10, 24);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.fillStyle = '#3de8ff';
+  ctx.fillRect(-10, -8, 26, 16);
+  ctx.fillStyle = '#8ec5ff';
+  ctx.fillRect(12, -4, 22, 8);
+
+  ctx.fillStyle = '#ff4fd8';
+  ctx.fillRect(-58, -10, 12, 6);
+  ctx.fillRect(-58, 4, 12, 6);
+
+  ctx.fillStyle = '#ffd166';
+  ctx.fillRect(48, -3, 12, 6);
+
+  ctx.restore();
+}
+
 export function drawEnemySprite(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -168,11 +218,12 @@ export function drawDamageNumber(
   y: number,
   amount: number,
   alpha: number,
+  color = '#8ef9ff',
 ): void {
   ctx.save();
   ctx.globalAlpha = alpha;
   ctx.font = '600 16px Orbitron, sans-serif';
-  ctx.fillStyle = '#8ef9ff';
+  ctx.fillStyle = color;
   ctx.strokeStyle = '#04313a';
   ctx.lineWidth = 3;
   ctx.strokeText(`-${amount}`, x, y);

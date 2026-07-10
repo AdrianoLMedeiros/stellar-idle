@@ -7,11 +7,14 @@ const renderer = new BattleRenderer(canvas);
 
 const loop = new GameLoop(
   (state, delta) => {
-    ui.update(state, (heroId) => loop.getHeroAtk(heroId));
+    ui.update(state);
     renderer.render(state, delta);
   },
   (result) => {
     renderer.addCombatFX(result.damageEvents, result.projectiles);
+    if (result.retreatCount > 0) {
+      ui.setStatus('Casco crítico. A nave recuou para reparos emergenciais.');
+    }
   },
 );
 

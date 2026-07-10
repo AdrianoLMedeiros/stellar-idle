@@ -1,7 +1,15 @@
 import { HERO_TEMPLATES } from '../data/heroes';
 import { UPGRADE_TEMPLATES } from '../data/upgrades';
 import { ZONES, getZone } from '../data/zones';
-import { getFleetDps, getUpgradeCost, getUpgradeLevel, xpToLevel } from '../game/progression';
+import {
+  getFleetDps,
+  getShipShieldRegen,
+  getShipWeaponDamage,
+  getShipWeaponInterval,
+  getUpgradeCost,
+  getUpgradeLevel,
+  xpToLevel,
+} from '../game/progression';
 import { getPrestigeBonusPercent } from '../game/prestige';
 import { canPrestige, estimatePrestigeGain } from '../game/state';
 import type { GameState } from '../game/types';
@@ -14,6 +22,13 @@ const UPGRADE_ICON_LABELS: Record<string, string> = {
   shields: 'SPD',
   scanner: 'CR',
   training: 'XP',
+};
+
+const CREW_STATIONS: Record<string, string> = {
+  nova: 'Comando',
+  vex: 'Artilharia',
+  aria: 'Engenharia',
+  lyra: 'Suporte',
 };
 
 function formatNumber(value: number): string {
@@ -42,6 +57,13 @@ export class UIManager {
   private enemyHp = document.getElementById('enemy-hp')!;
   private waveLabel = document.getElementById('wave-label')!;
   private enemyHpBar = document.getElementById('enemy-hp-bar')!;
+  private shipHull = document.getElementById('ship-hull')!;
+  private shipShield = document.getElementById('ship-shield')!;
+  private shipHullBar = document.getElementById('ship-hull-bar')!;
+  private shipShieldBar = document.getElementById('ship-shield-bar')!;
+  private shipDamage = document.getElementById('ship-damage')!;
+  private shipInterval = document.getElementById('ship-interval')!;
+  private shipRegen = document.getElementById('ship-regen')!;
   private zoneRoute = document.getElementById('zone-route')!;
   private areaProgressLabel = document.getElementById('area-progress-label')!;
   private areaProgressFill = document.getElementById('area-progress-fill')!;
@@ -76,7 +98,7 @@ export class UIManager {
           <canvas class="crew-sprite" width="56" height="56" data-hero-canvas="${hero.id}"></canvas>
           <div>
             <p class="crew-name">${hero.name}</p>
-            <p class="crew-role">${hero.roleLabel}</p>
+            <p class="crew-role">${CREW_STATIONS[hero.id] ?? hero.roleLabel}</p>
             <span class="crew-level">Nv. <span data-hero-level="${hero.id}">1</span></span>
             <div class="crew-xp">
               <span data-hero-xp-label="${hero.id}">XP 0 / 40</span>
@@ -86,8 +108,8 @@ export class UIManager {
             </div>
           </div>
           <div class="crew-meta">
-            <span class="muted">ATK</span>
-            <strong data-hero-atk="${hero.id}">0</strong>
+            <span class="muted">Posto</span>
+            <strong data-hero-station="${hero.id}">${CREW_STATIONS[hero.id] ?? hero.roleLabel}</strong>
           </div>
         </article>
       `;
@@ -139,7 +161,7 @@ export class UIManager {
     }).join('');
   }
 
-  update(state: GameState, getHeroAtk: (heroId: string) => number): void {
+  update(state: GameState): void {
     const zone = getZone(state.combat.zoneId);
 
     this.resCredits.textContent = formatNumber(state.credits);
@@ -153,16 +175,15 @@ export class UIManager {
 
     const hpPercent = (state.combat.enemyHp / state.combat.enemyMaxHp) * 100;
     this.enemyHpBar.style.width = `${Math.max(0, hpPercent)}%`;
+    this.updateShipPanel(state);
     this.updateAreaProgress(state);
 
     for (const hero of state.heroes) {
       const levelEl = this.crewList.querySelector(`[data-hero-level="${hero.id}"]`);
-      const atkEl = this.crewList.querySelector(`[data-hero-atk="${hero.id}"]`);
       const xpLabelEl = this.crewList.querySelector(`[data-hero-xp-label="${hero.id}"]`);
       const xpBarEl = this.crewList.querySelector<HTMLElement>(`[data-hero-xp-bar="${hero.id}"]`);
       const nextLevelXp = xpToLevel(hero.level);
       if (levelEl) levelEl.textContent = String(hero.level);
-      if (atkEl) atkEl.textContent = String(getHeroAtk(hero.id));
       if (xpLabelEl) xpLabelEl.textContent = `XP ${formatNumber(hero.xp)} / ${formatNumber(nextLevelXp)}`;
       if (xpBarEl) xpBarEl.style.width = `${Math.min(100, (hero.xp / nextLevelXp) * 100)}%`;
     }
@@ -224,5 +245,17 @@ export class UIManager {
       step.classList.toggle('locked', zoneId > state.combat.zoneId);
       step.classList.toggle('boss-alert', zoneId === state.combat.zoneId && state.combat.isBoss);
     });
+  }
+
+  private updateShipPanel(state: GameState): void {
+    const hullPercent = (state.ship.hull / state.ship.maxHull) * 100;
+    const shieldPercent = (state.ship.shield / state.ship.maxShield) * 100;
+    this.shipHull.textContent = `${formatNumber(state.ship.hull)} / ${formatNumber(state.ship.maxHull)}`;
+    this.shipShield.textContent = `${formatNumber(state.ship.shield)} / ${formatNumber(state.ship.maxShield)}`;
+    this.shipHullBar.style.width = `${Math.max(0, hullPercent)}%`;
+    this.shipShieldBar.style.width = `${Math.max(0, shieldPercent)}%`;
+    this.shipDamage.textContent = formatNumber(getShipWeaponDamage(state));
+    this.shipInterval.textContent = `${getShipWeaponInterval(state).toFixed(2)}s`;
+    this.shipRegen.textContent = `${getShipShieldRegen(state).toFixed(1)}/s`;
   }
 }

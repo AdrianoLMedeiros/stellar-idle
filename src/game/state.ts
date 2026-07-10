@@ -4,15 +4,19 @@ import { getZone } from '../data/zones';
 import type { CombatState, GameState, HeroState } from './types';
 
 const BASE_ENEMY_HP = 40;
+const BASE_ENEMY_ATK = 5;
 const BOSS_EVERY_WAVES = 10;
 const BOSS_HP_MULTIPLIER = 4.5;
+const BOSS_ATK_MULTIPLIER = 2.25;
+
+export const BASE_SHIP_HULL = 180;
+export const BASE_SHIP_SHIELD = 90;
 
 export function createInitialHeroes(): HeroState[] {
   return HERO_TEMPLATES.map((hero) => ({
     id: hero.id,
     level: 1,
     xp: 0,
-    attackTimer: Math.random() * hero.attackInterval,
   }));
 }
 
@@ -23,6 +27,16 @@ export function createInitialUpgrades() {
   }));
 }
 
+export function createInitialShip() {
+  return {
+    hull: BASE_SHIP_HULL,
+    maxHull: BASE_SHIP_HULL,
+    shield: BASE_SHIP_SHIELD,
+    maxShield: BASE_SHIP_SHIELD,
+    weaponTimer: 0,
+  };
+}
+
 export function createEnemyForWave(zoneId: number, wave: number): CombatState {
   const zone = getZone(zoneId);
   const enemyIndex = (wave - 1) % zone.enemies.length;
@@ -31,6 +45,8 @@ export function createEnemyForWave(zoneId: number, wave: number): CombatState {
   const bossScale = isBoss ? BOSS_HP_MULTIPLIER : 1;
   const hpScale = zone.enemyHpMultiplier * Math.pow(1.12, wave - 1) * bossScale;
   const maxHp = Math.floor(BASE_ENEMY_HP * hpScale);
+  const atkScale = zone.enemyHpMultiplier * Math.pow(1.08, wave - 1) * (isBoss ? BOSS_ATK_MULTIPLIER : 1);
+  const enemyAtk = Math.floor(BASE_ENEMY_ATK * atkScale);
 
   return {
     zoneId,
@@ -43,6 +59,9 @@ export function createEnemyForWave(zoneId: number, wave: number): CombatState {
     enemyColor: enemy.color,
     enemyAccent: enemy.accent,
     isBoss,
+    enemyAtk,
+    enemyAttackInterval: isBoss ? 2.4 : 2.8,
+    enemyAttackTimer: 0,
   };
 }
 
@@ -52,6 +71,7 @@ export function createInitialState(): GameState {
     credits: 0,
     quantumCrystals: 0,
     prestigeCount: 0,
+    ship: createInitialShip(),
     heroes: createInitialHeroes(),
     upgrades: createInitialUpgrades(),
     combat: createEnemyForWave(1, 1),

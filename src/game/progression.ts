@@ -1,8 +1,7 @@
-import { getHeroTemplate } from '../data/heroes';
 import { getUpgradeTemplate } from '../data/upgrades';
 import { getZone } from '../data/zones';
-import { getPrestigeMultiplier } from './state';
-import type { GameState, HeroState } from './types';
+import { BASE_SHIP_HULL, BASE_SHIP_SHIELD, getPrestigeMultiplier } from './state';
+import type { GameState } from './types';
 
 export function getUpgradeLevel(state: GameState, id: string): number {
   return state.upgrades.find((u) => u.id === id)?.level ?? 0;
@@ -13,28 +12,51 @@ export function getUpgradeCost(id: string, level: number): number {
   return Math.floor(template.baseCost * Math.pow(template.costGrowth, level));
 }
 
-export function getHeroAttack(hero: HeroState, state: GameState): number {
-  const template = getHeroTemplate(hero.id);
-  const weaponLevel = getUpgradeLevel(state, 'weapons');
-  const weaponBonus = getUpgradeTemplate('weapons').effectPerLevel * weaponLevel;
+export function getShipMaxHull(state: GameState): number {
+  const captain = state.heroes.find((hero) => hero.id === 'nova');
+  const captainBonus = captain ? (captain.level - 1) * 8 : 0;
+  const engineer = state.heroes.find((hero) => hero.id === 'aria');
+  const engineerBonus = engineer ? (engineer.level - 1) * 5 : 0;
   const prestige = getPrestigeMultiplier(state);
-  const levelScale = 1 + (hero.level - 1) * 0.15;
-  return Math.floor((template.baseAtk + weaponBonus) * levelScale * prestige);
+  return Math.floor((BASE_SHIP_HULL + captainBonus + engineerBonus) * prestige);
 }
 
-export function getHeroAttackInterval(hero: HeroState, state: GameState): number {
-  const template = getHeroTemplate(hero.id);
+export function getShipMaxShield(state: GameState): number {
   const shieldLevel = getUpgradeLevel(state, 'shields');
-  const speedBonus = getUpgradeTemplate('shields').effectPerLevel * shieldLevel;
-  return Math.max(0.35, template.attackInterval * (1 - speedBonus));
+  const engineer = state.heroes.find((hero) => hero.id === 'aria');
+  const engineerBonus = engineer ? (engineer.level - 1) * 7 : 0;
+  const upgradeBonus = shieldLevel * 14;
+  const prestige = getPrestigeMultiplier(state);
+  return Math.floor((BASE_SHIP_SHIELD + engineerBonus + upgradeBonus) * prestige);
+}
+
+export function getShipShieldRegen(state: GameState): number {
+  const shieldLevel = getUpgradeLevel(state, 'shields');
+  const support = state.heroes.find((hero) => hero.id === 'lyra');
+  const supportBonus = support ? (support.level - 1) * 0.08 : 0;
+  return 1.2 + shieldLevel * 0.18 + supportBonus;
+}
+
+export function getShipWeaponDamage(state: GameState): number {
+  const gunner = state.heroes.find((hero) => hero.id === 'vex');
+  const gunnerLevel = gunner?.level ?? 1;
+  const weaponLevel = getUpgradeLevel(state, 'weapons');
+  const captain = state.heroes.find((hero) => hero.id === 'nova');
+  const commandBonus = captain ? 1 + (captain.level - 1) * 0.02 : 1;
+  const prestige = getPrestigeMultiplier(state);
+  return Math.floor((18 + weaponLevel * 4 + (gunnerLevel - 1) * 3) * commandBonus * prestige);
+}
+
+export function getShipWeaponInterval(state: GameState): number {
+  const gunner = state.heroes.find((hero) => hero.id === 'vex');
+  const gunnerBonus = gunner ? (gunner.level - 1) * 0.015 : 0;
+  const trainingLevel = getUpgradeLevel(state, 'training');
+  const tacticalBonus = trainingLevel * 0.01;
+  return Math.max(0.55, 1.35 * (1 - gunnerBonus - tacticalBonus));
 }
 
 export function getFleetDps(state: GameState): number {
-  return state.heroes.reduce((total, hero) => {
-    const atk = getHeroAttack(hero, state);
-    const interval = getHeroAttackInterval(hero, state);
-    return total + atk / interval;
-  }, 0);
+  return getShipWeaponDamage(state) / getShipWeaponInterval(state);
 }
 
 export function getCreditReward(state: GameState): number {

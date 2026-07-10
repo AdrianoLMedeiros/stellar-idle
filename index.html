@@ -29,7 +29,7 @@
             <span class="value">0</span>
           </div>
           <div class="resource" id="res-dps">
-            <span class="label">DPS da Frota</span>
+            <span class="label">DPS da Nave</span>
             <span class="value">0</span>
           </div>
         </div>
@@ -37,10 +37,51 @@
 
       <main class="layout">
         <aside class="left-panels">
+          <section class="panel ship-panel">
+            <div class="panel-header">
+              <h2>Nave</h2>
+              <p>Integridade, escudos e sistemas de combate</p>
+            </div>
+            <div class="ship-body">
+              <div class="ship-meter">
+                <div>
+                  <span class="muted">Casco</span>
+                  <strong id="ship-hull">0 / 0</strong>
+                </div>
+                <div class="ship-bar hull">
+                  <div id="ship-hull-bar"></div>
+                </div>
+              </div>
+              <div class="ship-meter">
+                <div>
+                  <span class="muted">Escudo</span>
+                  <strong id="ship-shield">0 / 0</strong>
+                </div>
+                <div class="ship-bar shield">
+                  <div id="ship-shield-bar"></div>
+                </div>
+              </div>
+              <div class="ship-stats">
+                <div>
+                  <span class="muted">Armas</span>
+                  <strong id="ship-damage">0</strong>
+                </div>
+                <div>
+                  <span class="muted">Recarga</span>
+                  <strong id="ship-interval">0s</strong>
+                </div>
+                <div>
+                  <span class="muted">Regen.</span>
+                  <strong id="ship-regen">0/s</strong>
+                </div>
+              </div>
+            </div>
+          </section>
+
           <section class="panel crew-panel">
             <div class="panel-header">
               <h2>Tripulação</h2>
-              <p>4 heróis atacam automaticamente</p>
+              <p>Oficiais potencializam os sistemas da nave</p>
             </div>
             <div id="crew-list" class="crew-list"></div>
           </section>

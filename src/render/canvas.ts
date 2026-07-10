@@ -1,12 +1,11 @@
-import { getHeroTemplate } from '../data/heroes';
 import { getZone } from '../data/zones';
-import { getEnemyPosition, getHeroPositions } from '../game/combat';
+import { getEnemyPosition, getShipPosition } from '../game/combat';
 import type { DamageEvent, GameState, Projectile } from '../game/types';
 import {
   drawDamageNumber,
   drawEnemySprite,
-  drawHeroSprite,
   drawProjectile,
+  drawShipSprite,
   drawStarfield,
 } from './sprites';
 
@@ -45,20 +44,14 @@ export class BattleRenderer {
       this.drawBossWarning();
     }
 
-    const heroPositions = getHeroPositions();
-    state.heroes.forEach((hero, index) => {
-      const template = getHeroTemplate(hero.id);
-      const bob = Math.sin(this.time * 3 + index) * 3;
-      drawHeroSprite(
-        ctx,
-        heroPositions[index].x,
-        heroPositions[index].y,
-        template.color,
-        template.accent,
-        template.role,
-        bob,
-      );
-    });
+    const shipBob = Math.sin(this.time * 2.8) * 3;
+    drawShipSprite(
+      ctx,
+      getShipPosition().x,
+      getShipPosition().y,
+      state.ship.shield / Math.max(1, state.ship.maxShield),
+      shipBob,
+    );
 
     const enemyBob = Math.sin(this.time * 2.5) * 4;
     if (state.combat.isBoss) {
@@ -83,7 +76,14 @@ export class BattleRenderer {
 
     this.updateDamageEvents(deltaSeconds);
     for (const event of this.damageEvents) {
-      drawDamageNumber(ctx, event.x, event.y - (1 - event.life) * 30, event.amount, event.life);
+      drawDamageNumber(
+        ctx,
+        event.x,
+        event.y - (1 - event.life) * 30,
+        event.amount,
+        event.life,
+        event.color,
+      );
     }
   }
 

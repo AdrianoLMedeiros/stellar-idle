@@ -16,7 +16,14 @@ export interface HeroState {
   id: string;
   level: number;
   xp: number;
-  attackTimer: number;
+}
+
+export interface ShipState {
+  hull: number;
+  maxHull: number;
+  shield: number;
+  maxShield: number;
+  weaponTimer: number;
 }
 
 export interface EnemyTemplate {
@@ -62,12 +69,16 @@ export interface CombatState {
   enemyColor: string;
   enemyAccent: string;
   isBoss: boolean;
+  enemyAtk: number;
+  enemyAttackInterval: number;
+  enemyAttackTimer: number;
 }
 
 export interface GameState {
   credits: number;
   quantumCrystals: number;
   prestigeCount: number;
+  ship: ShipState;
   heroes: HeroState[];
   upgrades: UpgradeState[];
   combat: CombatState;
@@ -80,6 +91,7 @@ export interface CombatTickResult {
   damageEvents: DamageEvent[];
   projectiles: Projectile[];
   killCount: number;
+  retreatCount: number;
 }
 
 export interface DamageEvent {

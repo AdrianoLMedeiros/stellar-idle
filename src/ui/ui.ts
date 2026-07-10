@@ -1,11 +1,13 @@
 import { HERO_TEMPLATES } from '../data/heroes';
 import { UPGRADE_TEMPLATES } from '../data/upgrades';
-import { getZone } from '../data/zones';
+import { ZONES, getZone } from '../data/zones';
 import { getFleetDps, getUpgradeCost, getUpgradeLevel, xpToLevel } from '../game/progression';
 import { getPrestigeBonusPercent } from '../game/prestige';
 import { canPrestige, estimatePrestigeGain } from '../game/state';
 import type { GameState } from '../game/types';
 import { drawCrewPortrait } from '../render/sprites';
+
+const WAVES_PER_AREA = 10;
 
 function formatNumber(value: number): string {
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(2)}M`;
@@ -33,6 +35,9 @@ export class UIManager {
   private enemyHp = document.getElementById('enemy-hp')!;
   private waveLabel = document.getElementById('wave-label')!;
   private enemyHpBar = document.getElementById('enemy-hp-bar')!;
+  private zoneRoute = document.getElementById('zone-route')!;
+  private areaProgressLabel = document.getElementById('area-progress-label')!;
+  private areaProgressFill = document.getElementById('area-progress-fill')!;
   private prestigeGain = document.getElementById('prestige-gain')!;
   private prestigeBonus = document.getElementById('prestige-bonus')!;
   private prestigeBtn = document.getElementById('prestige-btn') as HTMLButtonElement;
@@ -54,6 +59,7 @@ export class UIManager {
     this.saveBtn.addEventListener('click', () => this.onSave());
     this.resetBtn.addEventListener('click', () => this.confirmReset());
     this.buildStaticLists();
+    this.buildZoneRoute();
   }
 
   private buildStaticLists(): void {
@@ -114,6 +120,17 @@ export class UIManager {
     });
   }
 
+  private buildZoneRoute(): void {
+    this.zoneRoute.innerHTML = ZONES.map((zone) => {
+      return `
+        <div class="zone-step" data-zone-step="${zone.id}">
+          <span class="zone-step-node">${zone.id}</span>
+          <span class="zone-step-name">${zone.name}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
   update(state: GameState, getHeroAtk: (heroId: string) => number): void {
     const zone = getZone(state.combat.zoneId);
 
@@ -128,6 +145,7 @@ export class UIManager {
 
     const hpPercent = (state.combat.enemyHp / state.combat.enemyMaxHp) * 100;
     this.enemyHpBar.style.width = `${Math.max(0, hpPercent)}%`;
+    this.updateAreaProgress(state);
 
     for (const hero of state.heroes) {
       const levelEl = this.crewList.querySelector(`[data-hero-level="${hero.id}"]`);
@@ -179,5 +197,20 @@ export class UIManager {
     const confirmed = window.confirm('Resetar todo o progresso salvo e começar uma nova campanha?');
     if (!confirmed) return;
     this.onReset();
+  }
+
+  private updateAreaProgress(state: GameState): void {
+    const waveInArea = ((state.combat.wave - 1) % WAVES_PER_AREA) + 1;
+    const areaProgress = Math.min(100, (waveInArea / WAVES_PER_AREA) * 100);
+
+    this.areaProgressLabel.textContent = `Onda ${waveInArea} / ${WAVES_PER_AREA}`;
+    this.areaProgressFill.style.width = `${areaProgress}%`;
+
+    this.zoneRoute.querySelectorAll<HTMLElement>('[data-zone-step]').forEach((step) => {
+      const zoneId = Number(step.dataset.zoneStep);
+      step.classList.toggle('completed', zoneId < state.combat.zoneId);
+      step.classList.toggle('current', zoneId === state.combat.zoneId);
+      step.classList.toggle('locked', zoneId > state.combat.zoneId);
+    });
   }
 }

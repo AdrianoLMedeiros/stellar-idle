@@ -145,6 +145,102 @@ body {
   background: linear-gradient(180deg, #0a1222 0%, #050a12 100%);
 }
 
+.zone-progress {
+  padding: 12px 16px 0;
+}
+
+.zone-progress-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.zone-progress-header strong {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  color: var(--gold);
+}
+
+.zone-route {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.zone-step {
+  position: relative;
+  min-width: 0;
+  padding: 9px 8px 8px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #0a1424;
+  color: var(--muted);
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease;
+}
+
+.zone-step-node {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  margin-bottom: 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(122, 155, 184, 0.35);
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+}
+
+.zone-step-name {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.zone-step.completed {
+  border-color: rgba(92, 255, 177, 0.35);
+  color: var(--success);
+  background: rgba(92, 255, 177, 0.08);
+}
+
+.zone-step.current {
+  border-color: rgba(255, 209, 102, 0.65);
+  color: var(--text);
+  background: linear-gradient(135deg, rgba(255, 209, 102, 0.14), rgba(61, 232, 255, 0.08));
+  box-shadow: 0 0 18px rgba(255, 209, 102, 0.08);
+}
+
+.zone-step.current .zone-step-node {
+  color: #041018;
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.zone-step.locked {
+  opacity: 0.55;
+}
+
+.area-progress-bar {
+  height: 6px;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: #08111f;
+  overflow: hidden;
+}
+
+.area-progress-bar > div {
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--gold), var(--cyan));
+  transition: width 0.2s ease;
+}
+
 .battle-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -393,5 +489,11 @@ body {
   .top-bar {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .zone-route {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

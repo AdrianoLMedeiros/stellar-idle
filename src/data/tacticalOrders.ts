@@ -9,6 +9,8 @@ export const TACTICAL_ORDERS: TacticalOrder[] = [
     cooldown: 18,
     duration: 5,
     fx: 'focused-fire',
+    impactLabel: '+45% dano',
+    impactColor: '#ffd166',
     effects: [{ type: 'weapon_damage', value: 0.45 }],
   },
   {
@@ -19,6 +21,8 @@ export const TACTICAL_ORDERS: TacticalOrder[] = [
     cooldown: 22,
     duration: 5,
     fx: 'forward-shields',
+    impactLabel: '-45% dano recebido',
+    impactColor: '#5cffb1',
     effects: [{ type: 'incoming_damage_reduction', value: 0.45 }],
   },
   {
@@ -29,6 +33,8 @@ export const TACTICAL_ORDERS: TacticalOrder[] = [
     cooldown: 26,
     duration: 4,
     fx: 'evasive-maneuver',
+    impactLabel: 'Próximo ataque evitado',
+    impactColor: '#8ef9ff',
     effects: [{ type: 'evasion', value: 1 }],
   },
 ];

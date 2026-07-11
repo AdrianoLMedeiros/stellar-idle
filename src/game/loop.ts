@@ -115,12 +115,15 @@ export class GameLoop {
   tryActivateTacticalOrder(orderId: string): { name: string; visual: TacticalOrderVisual } | null {
     const orderName = activateTacticalOrder(this.state, orderId);
     if (!orderName) return null;
+    const order = getTacticalOrder(orderId);
 
     saveGame(this.state);
     return {
       name: orderName,
       visual: {
-        type: getTacticalOrder(orderId).fx,
+        type: order.fx,
+        label: order.impactLabel,
+        color: order.impactColor,
         life: 1,
       },
     };

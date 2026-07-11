@@ -309,8 +309,8 @@ export class UIManager {
   private buildTacticalOrders(): void {
     this.tacticalOrderList.innerHTML = TACTICAL_ORDERS.map((order) => `
       <button class="tactical-order-btn" data-tactical-order="${order.id}" title="${order.description}">
-        <strong>${order.shortName}</strong>
-        <span>${order.duration}s</span>
+        <strong data-tactical-order-label="${order.id}">${order.shortName}</strong>
+        <span data-tactical-order-meta="${order.id}">${order.duration}s</span>
       </button>
     `).join('');
 
@@ -479,15 +479,20 @@ export class UIManager {
       const btn = this.tacticalOrderList.querySelector<HTMLButtonElement>(
         `[data-tactical-order="${orderState.id}"]`,
       );
+      const label = this.tacticalOrderList.querySelector<HTMLElement>(
+        `[data-tactical-order-label="${orderState.id}"]`,
+      );
+      const meta = this.tacticalOrderList.querySelector<HTMLElement>(
+        `[data-tactical-order-meta="${orderState.id}"]`,
+      );
       if (!btn) continue;
       const cooldown = Math.ceil(orderState.cooldown);
       const active = state.activeTacticalOrderEffects.some((effect) => effect.id === order.id);
       btn.disabled = cooldown > 0;
       btn.classList.toggle('active', active);
       btn.classList.toggle('cooling-down', cooldown > 0);
-      btn.innerHTML = cooldown > 0
-        ? `<strong>${cooldown}s</strong><span>Recarga</span>`
-        : `<strong>${order.shortName}</strong><span>${active ? 'Ativa' : `${order.duration}s`}</span>`;
+      if (label) label.textContent = cooldown > 0 ? `${cooldown}s` : order.shortName;
+      if (meta) meta.textContent = cooldown > 0 ? 'Recarga' : active ? 'Ativa' : `${order.duration}s`;
       btn.title = cooldown > 0
         ? `${order.name} recarregando.`
         : `${order.name}: ${order.description}`;

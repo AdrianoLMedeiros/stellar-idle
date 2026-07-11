@@ -1,5 +1,11 @@
 # Monetizacao
 
+## Estado Atual
+
+A monetizacao ainda e apenas uma base de produto. O jogo possui um overlay de **Suprimentos** em modo dev, com itens simulados localmente e sem processamento real de pagamento.
+
+Nenhuma compra real existe nesta fase alfa.
+
 ## Principios
 
 - O jogo precisa continuar divertido sem compra.
@@ -7,6 +13,7 @@
 - Beneficios pagos podem acelerar ritmo, melhorar conveniencia ou liberar cosmeticos.
 - Dano, casco, escudo e progressao podem receber bonus leves e temporarios, mas nunca devem substituir o loop de jogo.
 - Toda compra real futura deve ter descricao clara, duracao clara e impacto numerico visivel.
+- Ordens rapidas, acoes taticas e habilidades essenciais devem continuar acessiveis pelo jogo base.
 
 ## Categorias permitidas
 
@@ -32,3 +39,11 @@ Nesta fase, a loja e apenas uma simulacao local para desenvolvimento.
 - `PremiumState`: estado salvo com entitlements e boosts ativos.
 
 Os botoes de compra usam modo dev e nao processam pagamento real.
+
+## Requisitos Antes de Pagamento Real
+
+- Backend para validar compras, moedas premium e entitlements.
+- Autenticacao ou identificador confiavel de jogador.
+- Politica clara de reembolso/suporte.
+- Auditoria de balanceamento para evitar vantagem permanente excessiva.
+- Separacao entre save local e dados economicos sensiveis.

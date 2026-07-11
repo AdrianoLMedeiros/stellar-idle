@@ -19,6 +19,8 @@ Deploy alfa: `https://stellar-ten-nu.vercel.app/`.
 - **Habilidades**: oficiais ganham pontos ao subir de nível e desbloqueiam passivas.
 - **Especiais**: cada oficial possui uma habilidade ativa com cooldown para intervenção direta do jogador.
 - **Ordens rápidas**: comandos contextuais de combate com cooldown, efeito mecânico e FX no canvas.
+- **Ações táticas**: comandos de suporte como reparo, barreira, sobrecarga e varredura.
+- **Foco operacional**: postura do passadiço para priorizar equilíbrio, ataque, defesa ou exploração.
 - **Créditos**: moeda principal para melhorias da nave.
 - **Zonas**: avance derrotando ondas; cada área termina com um boss.
 - **Melhorias**: armas, escudos, scanner de loot e simulador tático.
@@ -30,9 +32,14 @@ Deploy alfa: `https://stellar-ten-nu.vercel.app/`.
 ## Interface
 
 - **Passadiço da Nave**: visão da sala de comando com os oficiais em suas estações, leitura do setor, ameaça atual e sistemas principais.
+- **HUD de combate**: canvas em tela cheia com painéis flutuantes para nave, navegação, tripulação, melhorias e salto quântico.
 - **Comando**: overlay com dados da campanha, salvar, exportar/importar backup e resetar.
 - **Tripulação**: cada oficial tem um overlay com XP, pontos, contribuição e habilidades.
 - **Suprimentos**: overlay de loja dev; não processa pagamento real.
+
+## Em Revisão
+
+- Indicadores flutuantes de impacto para ordens rápidas estão em revisão no PR #12.
 
 ## Monetização
 

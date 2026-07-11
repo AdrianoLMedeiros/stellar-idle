@@ -9,9 +9,24 @@ Esta versão é uma build alfa jogável de Stellar Idle RPG.
 - Ordens rápidas contextuais com feedback visual no canvas.
 - Passadiço com leitura operacional de efeitos ativos e prontidão.
 - Foco operacional persistido para ajustar prioridade da nave.
+- Oficiais com XP, pontos de habilidade, passivas desbloqueáveis e especiais ativos.
+- Bosses no encerramento das áreas.
 - Progresso local com `localStorage`.
 - Backup manual via exportação/importação de arquivo JSON.
 - Monetização apenas simulada em modo dev, sem pagamentos reais.
+
+## Loop Atual
+
+1. A nave combate automaticamente a ameaça atual.
+2. O jogador usa créditos para melhorar sistemas da nave.
+3. Oficiais recebem XP e desbloqueiam habilidades que potencializam sistemas.
+4. Ações táticas e ordens rápidas permitem intervenção manual durante o combate.
+5. O passadiço permite ajustar o foco operacional e consultar prontidão.
+6. O Salto Quântico reinicia progresso em troca de bônus permanentes.
+
+## Em Revisão
+
+- PR #12: indicadores flutuantes de impacto para ordens rápidas.
 
 ## Persistência
 

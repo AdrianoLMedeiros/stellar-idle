@@ -10,6 +10,12 @@
 - Foco operacional do Passadiço com posturas equilibrada, ofensiva, defensiva e exploração.
 - Ordens rápidas de combate com Fogo Concentrado, Escudos à Frente e Manobra Evasiva.
 - FX no canvas para acionamento de ordens táticas contextuais.
+- Indicadores flutuantes de impacto para ordens rápidas em revisão.
+- Workflow documentado com revisão por Vercel, SonarCloud/SonarQube e GitHub Codex Connector.
+
+### Documentação
+
+- README, alpha, monetização e workflow atualizados com o estado atual do projeto.
 
 ## 0.1.0-alpha.1
 

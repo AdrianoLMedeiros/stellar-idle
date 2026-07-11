@@ -1,5 +1,6 @@
 import { applyOfflineProgress, processCombatTick } from './combat';
 import { activateOfficerAbility } from './abilities';
+import { getTacticalOrder } from '../data/tacticalOrders';
 import { grantStoreItem, pruneExpiredBoosts } from './monetization';
 import { setOperationalFocus } from './operationalFocus';
 import { buyUpgrade, unlockSkill } from './progression';
@@ -7,7 +8,8 @@ import { performPrestige } from './prestige';
 import { exportSaveData, importSaveData, loadGame, saveGame } from './save';
 import { createInitialState } from './state';
 import { activateTacticalAction } from './tacticalActions';
-import type { CombatTickResult, GameState } from './types';
+import { activateTacticalOrder } from './tacticalOrders';
+import type { CombatTickResult, GameState, TacticalOrderVisual } from './types';
 
 const TICK_RATE = 1 / 60;
 const SAVE_INTERVAL_MS = 30_000;
@@ -108,6 +110,20 @@ export class GameLoop {
     const actionName = activateTacticalAction(this.state, actionId);
     if (actionName) saveGame(this.state);
     return actionName;
+  }
+
+  tryActivateTacticalOrder(orderId: string): { name: string; visual: TacticalOrderVisual } | null {
+    const orderName = activateTacticalOrder(this.state, orderId);
+    if (!orderName) return null;
+
+    saveGame(this.state);
+    return {
+      name: orderName,
+      visual: {
+        type: getTacticalOrder(orderId).fx,
+        life: 1,
+      },
+    };
   }
 
   trySetOperationalFocus(focusId: string): boolean {

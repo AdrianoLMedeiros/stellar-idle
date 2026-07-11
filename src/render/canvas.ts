@@ -1,6 +1,6 @@
 import { getZone } from '../data/zones';
 import { getEnemyPosition, getShipPosition } from '../game/combat';
-import type { DamageEvent, GameState, Projectile } from '../game/types';
+import type { DamageEvent, GameState, Projectile, TacticalOrderVisual } from '../game/types';
 import {
   drawDamageNumber,
   drawEnemySprite,
@@ -15,6 +15,7 @@ export class BattleRenderer {
   private height: number;
   private damageEvents: DamageEvent[] = [];
   private projectiles: Projectile[] = [];
+  private tacticalOrderVisuals: TacticalOrderVisual[] = [];
   private time = 0;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -28,6 +29,10 @@ export class BattleRenderer {
   addCombatFX(damageEvents: DamageEvent[], projectiles: Projectile[]): void {
     this.damageEvents.push(...damageEvents);
     this.projectiles.push(...projectiles);
+  }
+
+  addTacticalOrderFX(visual: TacticalOrderVisual): void {
+    this.tacticalOrderVisuals.push(visual);
   }
 
   render(state: GameState, deltaSeconds: number): void {
@@ -53,6 +58,8 @@ export class BattleRenderer {
       state.ship.shield / Math.max(1, state.ship.maxShield),
       shipBob,
     );
+    this.updateTacticalOrderVisuals(deltaSeconds);
+    this.drawTacticalOrderVisuals(shipBob);
 
     const enemyBob = Math.sin(this.time * 2.5) * 4;
     if (state.combat.isBoss) {
@@ -98,6 +105,82 @@ export class BattleRenderer {
     this.damageEvents = this.damageEvents
       .map((e) => ({ ...e, life: e.life - deltaSeconds }))
       .filter((e) => e.life > 0);
+  }
+
+  private updateTacticalOrderVisuals(deltaSeconds: number): void {
+    this.tacticalOrderVisuals = this.tacticalOrderVisuals
+      .map((visual) => ({ ...visual, life: visual.life - deltaSeconds }))
+      .filter((visual) => visual.life > 0);
+  }
+
+  private drawTacticalOrderVisuals(shipBob: number): void {
+    for (const visual of this.tacticalOrderVisuals) {
+      if (visual.type === 'focused-fire') {
+        this.drawFocusedFireFX(visual.life);
+      } else if (visual.type === 'forward-shields') {
+        this.drawForwardShieldsFX(visual.life, shipBob);
+      } else {
+        this.drawEvasiveManeuverFX(visual.life, shipBob);
+      }
+    }
+  }
+
+  private drawFocusedFireFX(life: number): void {
+    const ship = getShipPosition();
+    const enemy = getEnemyPosition();
+    const alpha = Math.min(1, life * 1.4);
+
+    this.ctx.save();
+    this.ctx.globalAlpha = alpha;
+    this.ctx.lineCap = 'round';
+    for (let i = -1; i <= 1; i += 1) {
+      this.ctx.strokeStyle = i === 0 ? '#ffd166' : '#ff5c7a';
+      this.ctx.shadowColor = this.ctx.strokeStyle;
+      this.ctx.shadowBlur = 16;
+      this.ctx.lineWidth = i === 0 ? 5 : 2;
+      this.ctx.beginPath();
+      this.ctx.moveTo(ship.x + 54, ship.y - 8 + i * 7);
+      this.ctx.lineTo(enemy.x - 24, enemy.y + i * 10);
+      this.ctx.stroke();
+    }
+    this.ctx.restore();
+  }
+
+  private drawForwardShieldsFX(life: number, shipBob: number): void {
+    const ship = getShipPosition();
+    const alpha = Math.min(1, life * 1.5);
+    const pulse = 1 + Math.sin(this.time * 18) * 0.06;
+
+    this.ctx.save();
+    this.ctx.globalAlpha = alpha;
+    this.ctx.strokeStyle = '#5cffb1';
+    this.ctx.shadowColor = '#5cffb1';
+    this.ctx.shadowBlur = 20;
+    this.ctx.lineWidth = 4;
+    this.ctx.beginPath();
+    this.ctx.ellipse(ship.x + 22, ship.y + shipBob, 42 * pulse, 38 * pulse, 0, -Math.PI * 0.42, Math.PI * 0.42);
+    this.ctx.stroke();
+    this.ctx.restore();
+  }
+
+  private drawEvasiveManeuverFX(life: number, shipBob: number): void {
+    const ship = getShipPosition();
+    const alpha = Math.min(1, life * 1.6);
+
+    this.ctx.save();
+    this.ctx.globalAlpha = alpha;
+    this.ctx.strokeStyle = '#8ef9ff';
+    this.ctx.shadowColor = '#8ef9ff';
+    this.ctx.shadowBlur = 14;
+    this.ctx.lineWidth = 3;
+    for (let i = 0; i < 3; i += 1) {
+      const offset = 22 + i * 16;
+      this.ctx.beginPath();
+      this.ctx.moveTo(ship.x - offset, ship.y + shipBob - 18 + i * 10);
+      this.ctx.lineTo(ship.x - offset - 38, ship.y + shipBob - 24 + i * 10);
+      this.ctx.stroke();
+    }
+    this.ctx.restore();
   }
 
   private getBattleLabelOrigin(): { x: number; y: number } {

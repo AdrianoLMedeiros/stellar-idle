@@ -18,6 +18,7 @@ Deploy alfa: `https://stellar-ten-nu.vercel.app/`.
 - **Tripulação**: 4 oficiais evoluem com XP e amplificam sistemas da nave.
 - **Habilidades**: oficiais ganham pontos ao subir de nível e desbloqueiam passivas.
 - **Especiais**: cada oficial possui uma habilidade ativa com cooldown para intervenção direta do jogador.
+- **Ordens rápidas**: comandos contextuais de combate com cooldown, efeito mecânico e FX no canvas.
 - **Créditos**: moeda principal para melhorias da nave.
 - **Zonas**: avance derrotando ondas; cada área termina com um boss.
 - **Melhorias**: armas, escudos, scanner de loot e simulador tático.

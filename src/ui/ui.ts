@@ -4,6 +4,7 @@ import { OPERATIONAL_FOCUSES, getOperationalFocus } from '../data/operationalFoc
 import { getOfficerSkills } from '../data/skills';
 import { STORE_ITEMS } from '../data/store';
 import { TACTICAL_ACTIONS, getTacticalAction } from '../data/tacticalActions';
+import { TACTICAL_ORDERS, getTacticalOrder } from '../data/tacticalOrders';
 import { UPGRADE_TEMPLATES } from '../data/upgrades';
 import { ZONES, getZone } from '../data/zones';
 import {
@@ -97,6 +98,7 @@ export class UIManager {
   private shipInterval = document.getElementById('ship-interval')!;
   private shipRegen = document.getElementById('ship-regen')!;
   private tacticalActionList = document.getElementById('tactical-action-list')!;
+  private tacticalOrderList = document.getElementById('tactical-order-list')!;
   private zoneRoute = document.getElementById('zone-route')!;
   private areaProgressLabel = document.getElementById('area-progress-label')!;
   private areaProgressFill = document.getElementById('area-progress-fill')!;
@@ -156,6 +158,7 @@ export class UIManager {
     private onUnlockSkill: (heroId: string, skillId: string) => void,
     private onActivateAbility: (heroId: string) => void,
     private onActivateTacticalAction: (actionId: string) => void,
+    private onActivateTacticalOrder: (orderId: string) => void,
     private readonly onSetOperationalFocus: (focusId: string) => void,
     private onClaimStoreItem: (itemId: string) => void,
     private onPrestige: () => void,
@@ -204,6 +207,7 @@ export class UIManager {
     this.resetBtn.addEventListener('click', () => this.confirmReset());
     this.buildStaticLists();
     this.buildTacticalActions();
+    this.buildTacticalOrders();
     this.buildBridgeFocus();
     this.buildZoneRoute();
     this.buildStoreList();
@@ -298,6 +302,22 @@ export class UIManager {
       btn.addEventListener('click', () => {
         const actionId = btn.dataset.tacticalAction;
         if (actionId) this.onActivateTacticalAction(actionId);
+      });
+    });
+  }
+
+  private buildTacticalOrders(): void {
+    this.tacticalOrderList.innerHTML = TACTICAL_ORDERS.map((order) => `
+      <button class="tactical-order-btn" data-tactical-order="${order.id}" title="${order.description}">
+        <strong>${order.shortName}</strong>
+        <span>${order.duration}s</span>
+      </button>
+    `).join('');
+
+    this.tacticalOrderList.querySelectorAll<HTMLButtonElement>('[data-tactical-order]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const orderId = btn.dataset.tacticalOrder;
+        if (orderId) this.onActivateTacticalOrder(orderId);
       });
     });
   }
@@ -452,6 +472,25 @@ export class UIManager {
       btn.title = cooldown > 0
         ? `${action.name} recarregando.`
         : `${action.name}: ${action.description}`;
+    }
+
+    for (const orderState of state.tacticalOrders) {
+      const order = getTacticalOrder(orderState.id);
+      const btn = this.tacticalOrderList.querySelector<HTMLButtonElement>(
+        `[data-tactical-order="${orderState.id}"]`,
+      );
+      if (!btn) continue;
+      const cooldown = Math.ceil(orderState.cooldown);
+      const active = state.activeTacticalOrderEffects.some((effect) => effect.id === order.id);
+      btn.disabled = cooldown > 0;
+      btn.classList.toggle('active', active);
+      btn.classList.toggle('cooling-down', cooldown > 0);
+      btn.innerHTML = cooldown > 0
+        ? `<strong>${cooldown}s</strong><span>Recarga</span>`
+        : `<strong>${order.shortName}</strong><span>${active ? 'Ativa' : `${order.duration}s`}</span>`;
+      btn.title = cooldown > 0
+        ? `${order.name} recarregando.`
+        : `${order.name}: ${order.description}`;
     }
 
     let affordableUpgradeCount = 0;

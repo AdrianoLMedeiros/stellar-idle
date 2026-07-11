@@ -5,6 +5,7 @@ import { getPremiumMultiplier } from './monetization';
 import { getOperationalFocusMultiplier } from './operationalFocus';
 import { BASE_SHIP_HULL, BASE_SHIP_SHIELD, getPrestigeMultiplier } from './state';
 import { getTacticalEffectMultiplier } from './tacticalActions';
+import { getTacticalOrderMultiplier } from './tacticalOrders';
 import type { GameState } from './types';
 
 export function getUpgradeLevel(state: GameState, id: string): number {
@@ -56,10 +57,11 @@ export function getShipWeaponDamage(state: GameState): number {
   const prestige = getPrestigeMultiplier(state);
   const skillMultiplier = getSkillEffectMultiplier(state, 'weapon_damage');
   const tacticalMultiplier = getTacticalEffectMultiplier(state, 'weapon_damage');
+  const orderMultiplier = getTacticalOrderMultiplier(state, 'weapon_damage');
   const focusMultiplier = getOperationalFocusMultiplier(state, 'weapon_damage');
   return Math.floor(
     (18 + weaponLevel * 4 + (gunnerLevel - 1) * 3) * commandBonus * prestige * skillMultiplier * tacticalMultiplier
-      * focusMultiplier,
+      * orderMultiplier * focusMultiplier,
   );
 }
 

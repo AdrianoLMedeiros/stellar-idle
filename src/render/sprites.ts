@@ -226,8 +226,9 @@ export function drawDamageNumber(
   ctx.fillStyle = color;
   ctx.strokeStyle = '#04313a';
   ctx.lineWidth = 3;
-  ctx.strokeText(`-${amount}`, x, y);
-  ctx.fillText(`-${amount}`, x, y);
+  const label = amount <= 0 ? 'EVADIU' : `-${amount}`;
+  ctx.strokeText(label, x, y);
+  ctx.fillText(label, x, y);
   ctx.restore();
 }
 

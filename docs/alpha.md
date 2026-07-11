@@ -6,6 +6,7 @@ Esta versão é uma build alfa jogável de Stellar Idle RPG.
 
 - Combate automático no navegador.
 - Ações táticas leves durante o combate.
+- Ordens rápidas contextuais com feedback visual no canvas.
 - Passadiço com leitura operacional de efeitos ativos e prontidão.
 - Foco operacional persistido para ajustar prioridade da nave.
 - Progresso local com `localStorage`.

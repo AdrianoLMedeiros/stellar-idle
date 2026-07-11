@@ -397,7 +397,12 @@ body {
   margin-top: 12px;
 }
 
-.tactical-actions > .muted {
+.tactical-orders {
+  margin-top: 10px;
+}
+
+.tactical-actions > .muted,
+.tactical-orders > .muted {
   display: block;
   margin-bottom: 6px;
   color: var(--muted);
@@ -405,7 +410,8 @@ body {
   text-transform: uppercase;
 }
 
-.tactical-action-list {
+.tactical-action-list,
+.tactical-order-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
@@ -421,6 +427,69 @@ body {
   color: var(--muted);
   background: rgba(61, 232, 255, 0.08);
   border-color: rgba(61, 232, 255, 0.18);
+}
+
+.tactical-order-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.tactical-order-btn {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 7px 6px;
+  border: 1px solid rgba(61, 232, 255, 0.28);
+  border-radius: 8px;
+  color: var(--cyan);
+  background: rgba(61, 232, 255, 0.1);
+  font-family: var(--font-display);
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.tactical-order-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  border-color: rgba(255, 209, 102, 0.7);
+  box-shadow: 0 0 16px rgba(255, 209, 102, 0.12);
+}
+
+.tactical-order-btn:disabled {
+  cursor: not-allowed;
+}
+
+.tactical-order-btn strong,
+.tactical-order-btn span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tactical-order-btn strong {
+  font-size: 0.66rem;
+}
+
+.tactical-order-btn span {
+  color: var(--muted);
+  font-size: 0.58rem;
+}
+
+.tactical-order-btn.active {
+  border-color: rgba(92, 255, 177, 0.68);
+  color: var(--success);
+  background: rgba(92, 255, 177, 0.12);
+  box-shadow: inset 0 0 14px rgba(92, 255, 177, 0.08);
+}
+
+.tactical-order-btn.cooling-down {
+  color: var(--muted);
+  border-color: rgba(122, 155, 184, 0.2);
+  background: rgba(18, 30, 53, 0.68);
 }
 
 .progress-bar {

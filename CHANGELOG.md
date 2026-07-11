@@ -8,6 +8,8 @@
 - Cooldowns e efeitos temporários persistidos no save local.
 - Passadiço operacional com efeitos ativos e prontidão de oficiais/ações táticas.
 - Foco operacional do Passadiço com posturas equilibrada, ofensiva, defensiva e exploração.
+- Ordens rápidas de combate com Fogo Concentrado, Escudos à Frente e Manobra Evasiva.
+- FX no canvas para acionamento de ordens táticas contextuais.
 
 ## 0.1.0-alpha.1
 

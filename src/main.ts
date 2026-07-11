@@ -49,6 +49,15 @@ const ui = new UIManager(
       ui.setStatus('Ação tática ainda em recarga.');
     }
   },
+  (orderId) => {
+    const activation = loop.tryActivateTacticalOrder(orderId);
+    if (activation) {
+      renderer.addTacticalOrderFX(activation.visual);
+      ui.setStatus(`${activation.name} transmitida ao passadiço.`);
+    } else {
+      ui.setStatus('Ordem tática ainda em recarga.');
+    }
+  },
   (focusId) => {
     if (loop.trySetOperationalFocus(focusId)) {
       ui.setStatus('Foco operacional atualizado.');

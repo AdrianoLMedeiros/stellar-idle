@@ -84,6 +84,7 @@ export function createInitialState(): GameState {
     activeAbilityEffects: [],
     tacticalActions: createInitialTacticalActions(),
     activeTacticalEffects: [],
+    operationalFocusId: 'balanced',
     combat: createEnemyForWave(1, 1),
     lastTick: now,
     lastSave: now,

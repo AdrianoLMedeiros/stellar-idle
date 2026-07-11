@@ -84,6 +84,27 @@ export interface ActiveTacticalEffect {
   effects: TacticalEffect[];
 }
 
+export type OperationalFocusEffectType =
+  | 'ship_hull'
+  | 'ship_shield'
+  | 'shield_regen'
+  | 'weapon_damage'
+  | 'credit_gain'
+  | 'xp_gain';
+
+export interface OperationalFocusEffect {
+  type: OperationalFocusEffectType;
+  value: number;
+}
+
+export interface OperationalFocus {
+  id: string;
+  name: string;
+  shortName: string;
+  description: string;
+  effects: OperationalFocusEffect[];
+}
+
 export type SkillEffectType =
   | 'ship_hull'
   | 'ship_shield'
@@ -223,6 +244,7 @@ export interface GameState {
   activeAbilityEffects: ActiveAbilityEffect[];
   tacticalActions: TacticalActionState[];
   activeTacticalEffects: ActiveTacticalEffect[];
+  operationalFocusId: string;
   combat: CombatState;
   lastTick: number;
   lastSave: number;

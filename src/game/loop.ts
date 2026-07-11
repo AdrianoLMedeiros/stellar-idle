@@ -1,6 +1,7 @@
 import { applyOfflineProgress, processCombatTick } from './combat';
 import { activateOfficerAbility } from './abilities';
 import { grantStoreItem, pruneExpiredBoosts } from './monetization';
+import { setOperationalFocus } from './operationalFocus';
 import { buyUpgrade, unlockSkill } from './progression';
 import { performPrestige } from './prestige';
 import { exportSaveData, importSaveData, loadGame, saveGame } from './save';
@@ -107,6 +108,12 @@ export class GameLoop {
     const actionName = activateTacticalAction(this.state, actionId);
     if (actionName) saveGame(this.state);
     return actionName;
+  }
+
+  trySetOperationalFocus(focusId: string): boolean {
+    const ok = setOperationalFocus(this.state, focusId);
+    if (ok) saveGame(this.state);
+    return ok;
   }
 
   saveNow(): void {

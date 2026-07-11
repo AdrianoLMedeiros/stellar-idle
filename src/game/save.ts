@@ -2,12 +2,13 @@ import { createEnemyForWave, createInitialShip, createInitialState } from './sta
 import { getShipMaxHull, getShipMaxShield } from './progression';
 import { getSkill } from '../data/skills';
 import { createInitialPremiumState, pruneExpiredBoosts } from './monetization';
+import { normalizeOperationalFocusId } from './operationalFocus';
 import { createInitialTacticalActions } from './tacticalActions';
 import type { GameState } from './types';
 
 const SAVE_KEY = 'stellar-idle-rpg-save-v1';
 const SAVE_SCHEMA = 'stellar-idle-rpg-save';
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 export const APP_VERSION = '0.1.0-alpha.1';
 
 interface SaveEnvelope {
@@ -82,6 +83,7 @@ function normalizeSave(state: GameState): GameState {
     activeAbilityEffects: state.activeAbilityEffects ?? [],
     tacticalActions: mergeTacticalActions(state.tacticalActions ?? []),
     activeTacticalEffects: state.activeTacticalEffects ?? [],
+    operationalFocusId: normalizeOperationalFocusId(state.operationalFocusId),
     combat,
     heroes: state.heroes.map((hero) => ({
       ...hero,

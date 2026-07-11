@@ -188,7 +188,7 @@ export class BattleRenderer {
     const ship = getShipPosition();
     const alpha = Math.min(1, visual.life * 1.7);
     const rise = (1 - visual.life) * 22;
-    const x = ship.x - 66;
+    const x = Math.max(ship.x - 66, this.getSafeLeftX());
     const y = ship.y + shipBob - 58 - rise;
 
     this.ctx.save();
@@ -225,15 +225,21 @@ export class BattleRenderer {
 
   private getBattleLabelOrigin(): { x: number; y: number } {
     const canvas = this.ctx.canvas;
-    const cssWidth = canvas.clientWidth || this.width;
     const cssHeight = canvas.clientHeight || this.height;
-    const safeLeftPx = Math.min(360, cssWidth * 0.24);
     const safeTopPx = Math.min(170, cssHeight * 0.18);
 
     return {
-      x: Math.max(20, (safeLeftPx / cssWidth) * this.width),
+      x: this.getSafeLeftX(),
       y: Math.max(28, (safeTopPx / cssHeight) * this.height),
     };
+  }
+
+  /** Canvas-space x below/right of which the fixed left ship panel never overlaps. */
+  private getSafeLeftX(): number {
+    const canvas = this.ctx.canvas;
+    const cssWidth = canvas.clientWidth || this.width;
+    const safeLeftPx = Math.min(360, cssWidth * 0.24);
+    return Math.max(20, (safeLeftPx / cssWidth) * this.width);
   }
 
   private drawBossWarning(x: number, y: number): void {

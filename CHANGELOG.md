@@ -17,6 +17,10 @@
 
 - README, alpha, monetização e workflow atualizados com o estado atual do projeto.
 
+### Corrigido
+
+- Canvas de batalha mantém a proporção correta em qualquer viewport, sem esticar os sprites da nave e do inimigo.
+
 ## 0.1.0-alpha.1
 
 Primeira versão alfa jogável publicada.

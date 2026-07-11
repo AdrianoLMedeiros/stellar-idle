@@ -120,7 +120,7 @@ export class UIManager {
   private bridgeHullBar = document.getElementById('bridge-hull-bar')!;
   private bridgeShieldBar = document.getElementById('bridge-shield-bar')!;
   private bridgeWeaponBar = document.getElementById('bridge-weapon-bar')!;
-  private bridgeFocus = document.getElementById('bridge-focus')!;
+  private readonly bridgeFocus = document.getElementById('bridge-focus')!;
   private bridgeEffects = document.getElementById('bridge-effects')!;
   private bridgeReadiness = document.getElementById('bridge-readiness')!;
   private bridgeStations = document.getElementById('bridge-stations')!;
@@ -156,7 +156,7 @@ export class UIManager {
     private onUnlockSkill: (heroId: string, skillId: string) => void,
     private onActivateAbility: (heroId: string) => void,
     private onActivateTacticalAction: (actionId: string) => void,
-    private onSetOperationalFocus: (focusId: string) => void,
+    private readonly onSetOperationalFocus: (focusId: string) => void,
     private onClaimStoreItem: (itemId: string) => void,
     private onPrestige: () => void,
     private onSave: () => void,

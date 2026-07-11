@@ -107,9 +107,9 @@ export function getXpReward(state: GameState): number {
   const premiumMultiplier = getPremiumMultiplier(state, 'xp_gain');
   const tacticalMultiplier = getTacticalEffectMultiplier(state, 'xp_gain');
   const focusMultiplier = getOperationalFocusMultiplier(state, 'xp_gain');
-  return Math.floor(
-    8 * trainingBonus * prestige * bossBonus * skillMultiplier * premiumMultiplier * tacticalMultiplier * focusMultiplier,
-  );
+  const rawReward =
+    8 * trainingBonus * prestige * bossBonus * skillMultiplier * premiumMultiplier * tacticalMultiplier * focusMultiplier;
+  return Math.ceil(rawReward);
 }
 
 export function xpToLevel(level: number): number {

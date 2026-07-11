@@ -167,10 +167,10 @@ body {
   width: 100vw;
   height: 100vh;
   object-fit: contain;
-  background:
-    radial-gradient(circle at 34% 46%, rgba(61, 232, 255, 0.08), transparent 24%),
-    radial-gradient(circle at 72% 42%, rgba(255, 92, 122, 0.08), transparent 22%),
-    linear-gradient(180deg, #0a1222 0%, #050a12 100%);
+  /* Matches the opaque fill drawStarfield() paints every frame, so any
+     object-fit letterbox padding blends with the rendered starfield
+     instead of showing as a mismatched band. */
+  background: #050a12;
 }
 
 .zone-progress {

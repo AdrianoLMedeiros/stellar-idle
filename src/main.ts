@@ -49,6 +49,13 @@ const ui = new UIManager(
       ui.setStatus('Ação tática ainda em recarga.');
     }
   },
+  (focusId) => {
+    if (loop.trySetOperationalFocus(focusId)) {
+      ui.setStatus('Foco operacional atualizado.');
+    } else {
+      ui.setStatus('Foco operacional já estava ativo.');
+    }
+  },
   (itemId) => {
     if (loop.tryClaimStoreItem(itemId)) {
       ui.setStatus('Suprimento ativado em modo dev.');

@@ -4,11 +4,12 @@ import { getSkill } from '../data/skills';
 import { createInitialPremiumState, pruneExpiredBoosts } from './monetization';
 import { normalizeOperationalFocusId } from './operationalFocus';
 import { createInitialTacticalActions } from './tacticalActions';
+import { createInitialTacticalOrders } from './tacticalOrders';
 import type { GameState } from './types';
 
 const SAVE_KEY = 'stellar-idle-rpg-save-v1';
 const SAVE_SCHEMA = 'stellar-idle-rpg-save';
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
 export const APP_VERSION = '0.1.0-alpha.1';
 
 interface SaveEnvelope {
@@ -83,6 +84,8 @@ function normalizeSave(state: GameState): GameState {
     activeAbilityEffects: state.activeAbilityEffects ?? [],
     tacticalActions: mergeTacticalActions(state.tacticalActions ?? []),
     activeTacticalEffects: state.activeTacticalEffects ?? [],
+    tacticalOrders: mergeTacticalOrders(state.tacticalOrders ?? []),
+    activeTacticalOrderEffects: state.activeTacticalOrderEffects ?? [],
     operationalFocusId: normalizeOperationalFocusId(state.operationalFocusId),
     combat,
     heroes: state.heroes.map((hero) => ({
@@ -116,12 +119,26 @@ function applyElapsedSaveTime(state: GameState): void {
   state.activeTacticalEffects = state.activeTacticalEffects
     .map((effect) => ({ ...effect, remaining: effect.remaining - elapsedSeconds }))
     .filter((effect) => effect.remaining > 0);
+  state.tacticalOrders = state.tacticalOrders.map((order) => ({
+    ...order,
+    cooldown: Math.max(0, order.cooldown - elapsedSeconds),
+  }));
+  state.activeTacticalOrderEffects = state.activeTacticalOrderEffects
+    .map((effect) => ({ ...effect, remaining: effect.remaining - elapsedSeconds }))
+    .filter((effect) => effect.remaining > 0);
 }
 
 function mergeTacticalActions(actions: GameState['tacticalActions']): GameState['tacticalActions'] {
   return createInitialTacticalActions().map((action) => ({
     ...action,
     cooldown: actions.find((candidate) => candidate.id === action.id)?.cooldown ?? 0,
+  }));
+}
+
+function mergeTacticalOrders(orders: GameState['tacticalOrders']): GameState['tacticalOrders'] {
+  return createInitialTacticalOrders().map((order) => ({
+    ...order,
+    cooldown: orders.find((candidate) => candidate.id === order.id)?.cooldown ?? 0,
   }));
 }
 

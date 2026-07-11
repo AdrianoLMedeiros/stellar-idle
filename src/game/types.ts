@@ -84,6 +84,36 @@ export interface ActiveTacticalEffect {
   effects: TacticalEffect[];
 }
 
+export type TacticalOrderEffectType = 'weapon_damage' | 'incoming_damage_reduction' | 'evasion';
+
+export interface TacticalOrderEffect {
+  type: TacticalOrderEffectType;
+  value: number;
+}
+
+export interface TacticalOrder {
+  id: string;
+  name: string;
+  shortName: string;
+  description: string;
+  cooldown: number;
+  duration: number;
+  fx: 'focused-fire' | 'forward-shields' | 'evasive-maneuver';
+  effects: TacticalOrderEffect[];
+}
+
+export interface TacticalOrderState {
+  id: string;
+  cooldown: number;
+}
+
+export interface ActiveTacticalOrderEffect {
+  id: string;
+  name: string;
+  remaining: number;
+  effects: TacticalOrderEffect[];
+}
+
 export type OperationalFocusEffectType =
   | 'ship_hull'
   | 'ship_shield'
@@ -244,6 +274,8 @@ export interface GameState {
   activeAbilityEffects: ActiveAbilityEffect[];
   tacticalActions: TacticalActionState[];
   activeTacticalEffects: ActiveTacticalEffect[];
+  tacticalOrders: TacticalOrderState[];
+  activeTacticalOrderEffects: ActiveTacticalOrderEffect[];
   operationalFocusId: string;
   combat: CombatState;
   lastTick: number;
@@ -274,4 +306,9 @@ export interface Projectile {
   progress: number;
   color: string;
   speed: number;
+}
+
+export interface TacticalOrderVisual {
+  type: TacticalOrder['fx'];
+  life: number;
 }

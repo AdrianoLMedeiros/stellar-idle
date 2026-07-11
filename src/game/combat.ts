@@ -13,6 +13,12 @@ import { tickOfficerAbilities } from './abilities';
 import { getPremiumMultiplier } from './monetization';
 import { createEnemyForWave } from './state';
 import { tickTacticalActions } from './tacticalActions';
+import {
+  consumeTacticalOrderEffect,
+  getTacticalOrderEffectValue,
+  getTacticalOrderMultiplier,
+  tickTacticalOrders,
+} from './tacticalOrders';
 import type { CombatTickResult, DamageEvent, GameState, Projectile } from './types';
 
 const HERO_POSITIONS = [
@@ -45,6 +51,7 @@ export function processCombatTick(state: GameState, deltaSeconds: number): Comba
 
   tickOfficerAbilities(state, deltaSeconds);
   tickTacticalActions(state, deltaSeconds);
+  tickTacticalOrders(state, deltaSeconds);
   syncShipStats(state);
   regenerateShield(state, deltaSeconds);
 
@@ -84,14 +91,21 @@ export function processCombatTick(state: GameState, deltaSeconds: number): Comba
   state.combat.enemyAttackTimer += deltaSeconds;
   while (state.combat.enemyAttackTimer >= state.combat.enemyAttackInterval) {
     state.combat.enemyAttackTimer -= state.combat.enemyAttackInterval;
-    const damage = state.combat.enemyAtk;
-    applyShipDamage(state, damage);
+    const evasiveManeuver = getTacticalOrderEffectValue(state, 'evasion') > 0;
+    const damage = evasiveManeuver
+      ? 0
+      : Math.max(1, Math.floor(state.combat.enemyAtk * getTacticalOrderMultiplier(state, 'incoming_damage_reduction')));
+    if (evasiveManeuver) {
+      consumeTacticalOrderEffect(state, 'evasion');
+    } else {
+      applyShipDamage(state, damage);
+    }
 
     damageEvents.push({
       x: SHIP_POSITION.x + (Math.random() - 0.5) * 36,
       y: SHIP_POSITION.y - 38 + (Math.random() - 0.5) * 18,
       amount: damage,
-      color: '#ff8ea8',
+      color: evasiveManeuver ? '#5cffb1' : '#ff8ea8',
       life: 0.8,
     });
 

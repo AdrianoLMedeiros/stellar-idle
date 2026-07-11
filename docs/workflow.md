@@ -43,6 +43,15 @@ Todo PR deve conter:
 - validação executada;
 - screenshots quando houver mudança visual.
 
+Use PR em modo **draft** enquanto a feature ainda estiver em teste local ou aguardando revisão do autor. Marque como pronto apenas quando:
+
+- a branch estiver sincronizada com `main`;
+- o escopo estiver fechado;
+- os checks principais estiverem verdes;
+- feedbacks acionáveis já tiverem sido tratados.
+
+Quando um PR depender de outro PR aberto, declare essa dependência na descrição e evite merge fora de ordem.
+
 ## Revisão Automatizada
 
 Antes do merge, confira os sinais automatizados do PR:
@@ -59,6 +68,16 @@ Quando houver feedback acionável:
 4. Só prossiga para merge quando SonarCloud, Vercel e feedbacks do Codex estiverem resolvidos ou explicitamente justificados.
 
 Comentários do Codex que afetem gameplay, persistência, balanceamento ou fluxo do usuário têm prioridade sobre ajustes cosméticos de código.
+
+## Documentacao
+
+Atualize documentação junto da feature quando houver mudança em mecânica, persistência, monetização, workflow ou interface principal.
+
+- `README.md`: visão geral jogável e links principais.
+- `docs/alpha.md`: escopo da build alfa, limitações e deploy.
+- `docs/monetization.md`: decisões sobre loja, boosts, cosméticos e limites éticos.
+- `docs/workflow.md`: processo de desenvolvimento, revisão e release.
+- `CHANGELOG.md`: mudanças agrupadas em `Unreleased` até a próxima tag alfa.
 
 ## Releases Alfa
 

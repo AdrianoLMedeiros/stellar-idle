@@ -6,7 +6,7 @@ Esta versão é uma build alfa jogável de Stellar Idle RPG.
 
 - Combate automático no navegador.
 - Ações táticas leves durante o combate.
-- Ordens rápidas contextuais com feedback visual no canvas.
+- Ordens rápidas contextuais com FX e indicadores de impacto no canvas.
 - Passadiço com leitura operacional de efeitos ativos e prontidão.
 - Foco operacional persistido para ajustar prioridade da nave.
 - Oficiais com XP, pontos de habilidade, passivas desbloqueáveis e especiais ativos.
@@ -23,10 +23,6 @@ Esta versão é uma build alfa jogável de Stellar Idle RPG.
 4. Ações táticas e ordens rápidas permitem intervenção manual durante o combate.
 5. O passadiço permite ajustar o foco operacional e consultar prontidão.
 6. O Salto Quântico reinicia progresso em troca de bônus permanentes.
-
-## Em Revisão
-
-- PR #12: indicadores flutuantes de impacto para ordens rápidas.
 
 ## Persistência
 

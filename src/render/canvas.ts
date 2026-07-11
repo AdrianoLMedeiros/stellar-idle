@@ -122,6 +122,7 @@ export class BattleRenderer {
       } else {
         this.drawEvasiveManeuverFX(visual.life, shipBob);
       }
+      this.drawTacticalOrderImpact(visual, shipBob);
     }
   }
 
@@ -181,6 +182,45 @@ export class BattleRenderer {
       this.ctx.stroke();
     }
     this.ctx.restore();
+  }
+
+  private drawTacticalOrderImpact(visual: TacticalOrderVisual, shipBob: number): void {
+    const ship = getShipPosition();
+    const alpha = Math.min(1, visual.life * 1.7);
+    const rise = (1 - visual.life) * 22;
+    const x = ship.x - 66;
+    const y = ship.y + shipBob - 58 - rise;
+
+    this.ctx.save();
+    this.ctx.globalAlpha = alpha;
+    this.ctx.font = '700 12px Orbitron, sans-serif';
+    const paddingX = 9;
+    const width = this.ctx.measureText(visual.label).width + paddingX * 2;
+    this.ctx.fillStyle = 'rgba(5, 10, 18, 0.74)';
+    this.ctx.strokeStyle = visual.color;
+    this.ctx.shadowColor = visual.color;
+    this.ctx.shadowBlur = 12;
+    this.roundRect(x, y - 17, width, 24, 7);
+    this.ctx.fill();
+    this.ctx.stroke();
+    this.ctx.shadowBlur = 0;
+    this.ctx.fillStyle = visual.color;
+    this.ctx.fillText(visual.label, x + paddingX, y);
+    this.ctx.restore();
+  }
+
+  private roundRect(x: number, y: number, width: number, height: number, radius: number): void {
+    this.ctx.beginPath();
+    this.ctx.moveTo(x + radius, y);
+    this.ctx.lineTo(x + width - radius, y);
+    this.ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    this.ctx.lineTo(x + width, y + height - radius);
+    this.ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    this.ctx.lineTo(x + radius, y + height);
+    this.ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    this.ctx.lineTo(x, y + radius);
+    this.ctx.quadraticCurveTo(x, y, x + radius, y);
+    this.ctx.closePath();
   }
 
   private getBattleLabelOrigin(): { x: number; y: number } {

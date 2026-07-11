@@ -99,6 +99,8 @@ export interface TacticalOrder {
   cooldown: number;
   duration: number;
   fx: 'focused-fire' | 'forward-shields' | 'evasive-maneuver';
+  impactLabel: string;
+  impactColor: string;
   effects: TacticalOrderEffect[];
 }
 
@@ -310,5 +312,7 @@ export interface Projectile {
 
 export interface TacticalOrderVisual {
   type: TacticalOrder['fx'];
+  label: string;
+  color: string;
   life: number;
 }

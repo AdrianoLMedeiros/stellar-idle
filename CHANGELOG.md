@@ -12,6 +12,7 @@
 - FX no canvas para acionamento de ordens táticas contextuais.
 - Indicadores flutuantes de impacto para ordens rápidas no canvas.
 - Workflow documentado com revisão por Vercel, SonarCloud/SonarQube e GitHub Codex Connector.
+- Vercel Analytics inicializado no bootstrap do app para métricas de uso do deploy alfa.
 
 ### Documentação
 

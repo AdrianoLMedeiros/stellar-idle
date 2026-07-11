@@ -98,7 +98,7 @@ export class UIManager {
   private shipInterval = document.getElementById('ship-interval')!;
   private shipRegen = document.getElementById('ship-regen')!;
   private tacticalActionList = document.getElementById('tactical-action-list')!;
-  private tacticalOrderList = document.getElementById('tactical-order-list')!;
+  private readonly tacticalOrderList = document.getElementById('tactical-order-list')!;
   private zoneRoute = document.getElementById('zone-route')!;
   private areaProgressLabel = document.getElementById('area-progress-label')!;
   private areaProgressFill = document.getElementById('area-progress-fill')!;
@@ -158,7 +158,7 @@ export class UIManager {
     private onUnlockSkill: (heroId: string, skillId: string) => void,
     private onActivateAbility: (heroId: string) => void,
     private onActivateTacticalAction: (actionId: string) => void,
-    private onActivateTacticalOrder: (orderId: string) => void,
+    private readonly onActivateTacticalOrder: (orderId: string) => void,
     private readonly onSetOperationalFocus: (focusId: string) => void,
     private onClaimStoreItem: (itemId: string) => void,
     private onPrestige: () => void,
@@ -492,7 +492,12 @@ export class UIManager {
       btn.classList.toggle('active', active);
       btn.classList.toggle('cooling-down', cooldown > 0);
       if (label) label.textContent = cooldown > 0 ? `${cooldown}s` : order.shortName;
-      if (meta) meta.textContent = cooldown > 0 ? 'Recarga' : active ? 'Ativa' : `${order.duration}s`;
+      if (meta) {
+        let metaText = `${order.duration}s`;
+        if (cooldown > 0) metaText = 'Recarga';
+        else if (active) metaText = 'Ativa';
+        meta.textContent = metaText;
+      }
       btn.title = cooldown > 0
         ? `${order.name} recarregando.`
         : `${order.name}: ${order.description}`;

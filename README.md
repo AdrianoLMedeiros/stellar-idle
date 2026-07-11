@@ -53,6 +53,7 @@ O projeto começou a preparar uma base de monetização sem gateway real. A regr
 - Vite + TypeScript
 - Canvas 2D (sprites procedurais sci-fi)
 - `localStorage` para save automático versionado
+- Vercel Analytics para métricas de uso do deploy alfa
 
 ## Scripts
 

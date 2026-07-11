@@ -1,6 +1,9 @@
+import { inject } from '@vercel/analytics';
 import { GameLoop } from './game/loop';
 import { BattleRenderer } from './render/canvas';
 import { UIManager } from './ui/ui';
+
+inject();
 
 const canvas = document.getElementById('battle-canvas') as HTMLCanvasElement;
 const renderer = new BattleRenderer(canvas);

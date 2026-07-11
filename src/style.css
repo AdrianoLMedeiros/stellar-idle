@@ -441,10 +441,21 @@ body {
   background: linear-gradient(90deg, var(--danger), #ff9b6a);
 }
 
-.left-panels,
 .right-panels {
   display: contents;
   min-width: 0;
+}
+
+.left-panels {
+  position: fixed;
+  top: 100px;
+  left: 12px;
+  z-index: 6;
+  display: grid;
+  gap: 8px;
+  width: min(300px, 22vw);
+  min-width: 0;
+  pointer-events: none;
 }
 
 .battle-panel {
@@ -460,11 +471,7 @@ body {
 }
 
 .ship-panel {
-  position: fixed;
-  top: 100px;
-  left: 12px;
-  z-index: 5;
-  width: min(300px, 22vw);
+  width: auto;
 }
 
 .crew-panel {
@@ -1520,11 +1527,6 @@ body {
 }
 
 .status-bar {
-  position: fixed;
-  left: 12px;
-  top: 424px;
-  z-index: 6;
-  width: min(300px, 22vw);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1576,6 +1578,7 @@ body {
     min-height: 340px;
   }
 
+  .left-panels,
   .battle-stats,
   .progress-bar,
   .zone-progress,
@@ -1610,8 +1613,11 @@ body {
   }
 
   .left-panels {
+    position: static;
     display: contents;
     order: 2;
+    width: auto;
+    pointer-events: auto;
   }
 
   .right-panels {
@@ -1669,7 +1675,7 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .ship-panel {
+  .left-panels {
     width: 240px;
   }
 

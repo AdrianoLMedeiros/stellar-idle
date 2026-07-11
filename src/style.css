@@ -57,8 +57,8 @@ body {
   display: grid;
   grid-template-columns: minmax(180px, 0.7fr) auto minmax(260px, 1fr);
   align-items: center;
-  gap: 16px;
-  padding: 10px 14px;
+  gap: 14px;
+  padding: 9px 13px;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: rgba(13, 21, 38, 0.9);
@@ -94,8 +94,8 @@ body {
 }
 
 .resource {
-  min-width: 120px;
-  padding: 8px 12px;
+  min-width: 108px;
+  padding: 7px 11px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: rgba(18, 30, 53, 0.78);
@@ -178,8 +178,8 @@ body {
   left: 12px;
   bottom: 16px;
   z-index: 6;
-  width: min(320px, 24vw);
-  padding: 12px;
+  width: min(288px, 22vw);
+  padding: 11px;
   border: 1px solid rgba(61, 232, 255, 0.32);
   border-radius: 10px;
   background: rgba(13, 21, 38, 0.84);
@@ -205,13 +205,13 @@ body {
 .zone-route {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 8px;
+  gap: 7px;
 }
 
 .zone-step {
   position: relative;
   min-width: 0;
-  padding: 8px;
+  padding: 7px;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: #0a1424;
@@ -229,9 +229,9 @@ body {
 .zone-step-node {
   display: inline-grid;
   place-items: center;
-  width: 22px;
-  height: 22px;
-  margin-bottom: 5px;
+  width: 20px;
+  height: 20px;
+  margin-bottom: 4px;
   border-radius: 999px;
   border: 1px solid rgba(122, 155, 184, 0.35);
   font-family: var(--font-display);
@@ -304,9 +304,9 @@ body {
 .battle-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-bottom: 8px;
-  padding: 10px;
+  gap: 7px;
+  margin-bottom: 7px;
+  padding: 9px;
   border: 1px solid rgba(255, 92, 122, 0.28);
   border-radius: 8px;
   background: rgba(13, 21, 38, 0.78);
@@ -324,17 +324,17 @@ body {
 }
 
 .ship-body {
-  padding: 12px;
+  padding: 11px;
 }
 
 .ship-meter + .ship-meter {
-  margin-top: 12px;
+  margin-top: 11px;
 }
 
 .ship-meter > div:first-child {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: 11px;
 }
 
 .ship-meter strong,
@@ -344,8 +344,8 @@ body {
 }
 
 .ship-bar {
-  height: 8px;
-  margin-top: 6px;
+  height: 7px;
+  margin-top: 5px;
   border-radius: 999px;
   background: #08111f;
   overflow: hidden;
@@ -369,13 +369,13 @@ body {
 .ship-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 12px;
+  gap: 7px;
+  margin-top: 11px;
 }
 
 .ship-stats > div {
   min-width: 0;
-  padding: 8px;
+  padding: 7px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: rgba(18, 30, 53, 0.78);
@@ -395,11 +395,11 @@ body {
 }
 
 .tactical-actions {
-  margin-top: 12px;
+  margin-top: 11px;
 }
 
 .tactical-orders {
-  margin-top: 10px;
+  margin-top: 9px;
 }
 
 .tactical-actions > .muted,
@@ -415,13 +415,14 @@ body {
 .tactical-order-list {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: 7px;
 }
 
 .tactical-action-btn {
   min-height: 30px;
   padding: 7px 8px;
   font-size: 0.66rem;
+  overflow-wrap: break-word;
 }
 
 .tactical-action-btn.cooling-down {
@@ -438,8 +439,8 @@ body {
   display: grid;
   gap: 2px;
   min-width: 0;
-  min-height: 44px;
-  padding: 7px 6px;
+  min-height: 40px;
+  padding: 6px 5px;
   border: 1px solid rgba(61, 232, 255, 0.28);
   border-radius: 8px;
   color: var(--cyan);
@@ -522,8 +523,8 @@ body {
   left: 12px;
   z-index: 6;
   display: grid;
-  gap: 8px;
-  width: min(300px, 22vw);
+  gap: 7px;
+  width: min(270px, 20vw);
   min-width: 0;
   pointer-events: none;
 }
@@ -549,9 +550,9 @@ body {
   left: 50%;
   bottom: 16px;
   z-index: 5;
-  width: min(860px, calc(100vw - 720px));
-  min-width: 520px;
-  max-height: 196px;
+  width: min(774px, calc(100vw - 650px));
+  min-width: 468px;
+  max-height: 176px;
   transform: translateX(-50%);
 }
 
@@ -560,8 +561,8 @@ body {
   right: 12px;
   top: 100px;
   z-index: 5;
-  width: min(360px, 28vw);
-  max-height: calc(100vh - 240px);
+  width: min(324px, 25vw);
+  max-height: calc(100vh - 216px);
 }
 
 .prestige-panel {
@@ -569,7 +570,7 @@ body {
   right: 12px;
   bottom: 16px;
   z-index: 5;
-  width: min(320px, 24vw);
+  width: min(288px, 22vw);
 }
 
 @media (min-width: 961px) {
@@ -582,8 +583,8 @@ body {
 .upgrade-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 10px;
+  gap: 7px;
+  padding: 9px;
 }
 
 .crew-panel .crew-list,
@@ -600,16 +601,16 @@ body {
 }
 
 .crew-panel .crew-card {
-  grid-template-columns: 38px minmax(0, 1fr);
-  gap: 8px;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 7px;
   align-items: start;
-  min-height: 116px;
-  padding: 8px;
+  min-height: 104px;
+  padding: 7px;
 }
 
 .crew-panel .crew-sprite {
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   border-radius: 7px;
 }
 
@@ -657,25 +658,25 @@ body {
 
 .crew-panel .hero-info-btn {
   justify-self: end;
-  min-height: 28px;
-  padding: 5px 7px;
+  min-height: 25px;
+  padding: 5px 6px;
   font-size: 0.6rem;
 }
 
 .crew-panel .hero-ability-btn {
   justify-self: end;
-  min-height: 28px;
-  padding: 5px 7px;
+  min-height: 25px;
+  padding: 5px 6px;
   font-size: 0.6rem;
 }
 
 .crew-card,
 .upgrade-card {
   display: grid;
-  grid-template-columns: 46px minmax(0, 1fr);
-  gap: 8px;
+  grid-template-columns: 41px minmax(0, 1fr);
+  gap: 7px;
   align-items: center;
-  padding: 8px;
+  padding: 7px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: rgba(18, 30, 53, 0.78);
@@ -683,8 +684,8 @@ body {
 
 .crew-sprite,
 .upgrade-icon {
-  width: 46px;
-  height: 46px;
+  width: 41px;
+  height: 41px;
   border-radius: 8px;
   border: 1px solid rgba(61, 232, 255, 0.25);
   background: #08111f;
@@ -703,8 +704,8 @@ body {
 }
 
 .upgrade-empty {
-  margin: 10px;
-  padding: 12px;
+  margin: 9px;
+  padding: 11px;
   border: 1px dashed rgba(122, 155, 184, 0.3);
   border-radius: 8px;
   color: var(--muted);
@@ -759,13 +760,13 @@ body {
   grid-column: 2;
   grid-template-columns: 1fr auto auto;
   align-items: end;
-  gap: 8px;
+  gap: 7px;
 }
 
 .hero-ability-btn,
 .hero-info-btn {
   position: relative;
-  padding: 7px 9px;
+  padding: 6px 8px;
   font-size: 0.68rem;
 }
 
@@ -1766,7 +1767,7 @@ body {
 @media (max-width: 1280px) and (min-width: 961px) {
   .crew-card,
   .upgrade-card {
-    grid-template-columns: 42px minmax(0, 1fr);
+    grid-template-columns: 38px minmax(0, 1fr);
   }
 
   .crew-meta,
@@ -1781,8 +1782,8 @@ body {
 
   .crew-sprite,
   .upgrade-icon {
-    width: 42px;
-    height: 42px;
+    width: 38px;
+    height: 38px;
   }
 
   .ship-stats {
@@ -1790,24 +1791,24 @@ body {
   }
 
   .left-panels {
-    width: 240px;
+    width: 216px;
   }
 
   .crew-panel {
-    width: min(620px, calc(100vw - 620px));
-    min-width: 420px;
+    width: min(558px, calc(100vw - 558px));
+    min-width: 378px;
   }
 
   .upgrades-panel {
-    width: 300px;
+    width: 270px;
   }
 
   .prestige-panel {
-    width: 280px;
+    width: 252px;
   }
 
   .zone-progress {
-    width: 260px;
+    width: 234px;
   }
 
   .zone-route {

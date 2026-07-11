@@ -21,6 +21,10 @@
 
 - Canvas de batalha mantém a proporção correta em qualquer viewport, sem esticar os sprites da nave e do inimigo.
 
+### Alterado
+
+- Painéis do HUD principal (nave, melhorias, tripulação, navegação) ~10% mais compactos na largura padrão de desktop, deixando mais da cena de batalha visível.
+
 ## 0.1.0-alpha.1
 
 Primeira versão alfa jogável publicada.

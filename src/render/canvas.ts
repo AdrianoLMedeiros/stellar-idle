@@ -234,12 +234,10 @@ export class BattleRenderer {
     };
   }
 
-  /** Canvas-space x below/right of which the fixed left ship panel never overlaps. */
   private getSafeLeftX(): number {
     const canvas = this.ctx.canvas;
     const cssWidth = canvas.clientWidth || this.width;
-    const safeLeftPx = Math.min(360, cssWidth * 0.24);
-    return Math.max(20, (safeLeftPx / cssWidth) * this.width);
+    return (20 / cssWidth) * this.width;
   }
 
   private drawBossWarning(x: number, y: number): void {

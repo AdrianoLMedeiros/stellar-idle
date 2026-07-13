@@ -14,34 +14,34 @@
   </head>
   <body>
     <div id="app">
-      <header class="top-bar">
-        <div class="brand">
-          <span class="brand-icon">✦</span>
-          <h1>Stellar Idle RPG</h1>
-        </div>
-        <div class="top-actions">
-          <button id="bridge-toggle" class="btn secondary command-toggle">Passadiço</button>
-          <button id="store-toggle" class="btn secondary command-toggle">Suprimentos</button>
-          <button id="command-toggle" class="btn secondary command-toggle">Comando</button>
-        </div>
-        <div class="resources">
-          <div class="resource" id="res-credits">
-            <span class="label">Créditos</span>
-            <span class="value">0</span>
+      <div class="game-grid">
+        <header class="top-bar grid-top">
+          <div class="brand">
+            <span class="brand-icon">✦</span>
+            <h1>Stellar Idle RPG</h1>
           </div>
-          <div class="resource" id="res-crystals">
-            <span class="label">Cristais Quânticos</span>
-            <span class="value">0</span>
+          <div class="top-actions">
+            <button id="bridge-toggle" class="btn secondary command-toggle">Passadiço</button>
+            <button id="store-toggle" class="btn secondary command-toggle">Suprimentos</button>
+            <button id="command-toggle" class="btn secondary command-toggle">Comando</button>
           </div>
-          <div class="resource" id="res-dps">
-            <span class="label">DPS da Nave</span>
-            <span class="value">0</span>
+          <div class="resources">
+            <div class="resource" id="res-credits">
+              <span class="label">Créditos</span>
+              <span class="value">0</span>
+            </div>
+            <div class="resource" id="res-crystals">
+              <span class="label">Cristais Quânticos</span>
+              <span class="value">0</span>
+            </div>
+            <div class="resource" id="res-dps">
+              <span class="label">DPS da Nave</span>
+              <span class="value">0</span>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <main class="layout">
-        <aside class="left-panels">
+        <aside class="left-panels grid-left" aria-label="Nave, status e navegação">
           <section class="panel ship-panel">
             <div class="panel-header">
               <h2>Nave</h2>
@@ -96,47 +96,50 @@
             <span id="offline-banner" class="offline-banner hidden"></span>
           </footer>
 
-          <section class="panel crew-panel">
+          <section class="panel zone-progress">
             <div class="panel-header">
-              <h2>Tripulação</h2>
-              <p>Oficiais potencializam os sistemas da nave</p>
+              <h2>Navegação</h2>
+              <p id="area-progress-label">Onda 1 / 10</p>
             </div>
-            <div id="crew-list" class="crew-list"></div>
+            <div class="zone-progress-body">
+              <div class="battle-stats">
+                <div>
+                  <span class="muted">Inimigo</span>
+                  <strong id="enemy-name">—</strong>
+                </div>
+                <div>
+                  <span class="muted">HP</span>
+                  <strong id="enemy-hp">0 / 0</strong>
+                </div>
+                <div>
+                  <span class="muted">Onda</span>
+                  <strong id="wave-label">1</strong>
+                </div>
+              </div>
+              <div class="progress-bar">
+                <div id="enemy-hp-bar" class="progress-fill enemy"></div>
+              </div>
+              <div id="zone-route" class="zone-route" aria-label="Progresso entre áreas"></div>
+              <div class="area-progress-bar">
+                <div id="area-progress-fill"></div>
+              </div>
+            </div>
           </section>
         </aside>
 
-        <section class="battle-panel panel">
+        <section class="battle-panel panel grid-canvas">
           <canvas id="battle-canvas" width="720" height="320"></canvas>
-          <div class="zone-progress">
-            <div class="zone-progress-header">
-              <span class="muted">Navegação</span>
-              <strong id="area-progress-label">Onda 1 / 10</strong>
-            </div>
-            <div class="battle-stats">
-              <div>
-                <span class="muted">Inimigo</span>
-                <strong id="enemy-name">—</strong>
-              </div>
-              <div>
-                <span class="muted">HP</span>
-                <strong id="enemy-hp">0 / 0</strong>
-              </div>
-              <div>
-                <span class="muted">Onda</span>
-                <strong id="wave-label">1</strong>
-              </div>
-            </div>
-            <div class="progress-bar">
-              <div id="enemy-hp-bar" class="progress-fill enemy"></div>
-            </div>
-            <div id="zone-route" class="zone-route" aria-label="Progresso entre áreas"></div>
-            <div class="area-progress-bar">
-              <div id="area-progress-fill"></div>
-            </div>
-          </div>
         </section>
 
-        <aside class="right-panels">
+        <section class="panel crew-panel grid-crew">
+          <div class="panel-header">
+            <h2>Tripulação</h2>
+            <p>Oficiais potencializam os sistemas da nave</p>
+          </div>
+          <div id="crew-list" class="crew-list"></div>
+        </section>
+
+        <aside class="right-panels grid-right" aria-label="Melhorias da nave e salto quântico">
           <section class="panel upgrades-panel">
             <div class="panel-header">
               <h2>Melhorias da Nave</h2>
@@ -175,7 +178,7 @@
             </div>
           </section>
         </aside>
-      </main>
+      </div>
 
       <div id="command-overlay" class="command-overlay hidden" aria-hidden="true">
         <section class="panel command-dialog" role="dialog" aria-modal="true" aria-labelledby="command-title">

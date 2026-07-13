@@ -18,6 +18,10 @@
 
 - README, alpha, monetização e workflow atualizados com o estado atual do projeto.
 
+### Alterado
+
+- Layout reorganizado em grade fixa: painel superior (título, menu e recursos), coluna esquerda (nave, status e navegação), área central (canvas de batalha e tripulação) e coluna direita (melhorias e salto quântico), substituindo os painéis flutuantes sobrepostos ao canvas.
+
 ### Corrigido
 
 - Canvas de batalha mantém a proporção correta em qualquer viewport, sem esticar os sprites da nave e do inimigo.

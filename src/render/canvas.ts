@@ -42,12 +42,15 @@ export class BattleRenderer {
     drawStarfield(ctx, this.width, this.height, Math.floor(this.time * 10));
 
     const zone = getZone(state.combat.zoneId);
-    const labelOrigin = this.getBattleLabelOrigin();
+    const labelOrigin = this.getZoneLabelOrigin();
+    ctx.save();
+    ctx.textAlign = 'center';
     ctx.fillStyle = 'rgba(61, 232, 255, 0.12)';
-    ctx.font = '600 14px Orbitron, sans-serif';
+    ctx.font = '600 22px Orbitron, sans-serif';
     ctx.fillText(zone.name, labelOrigin.x, labelOrigin.y);
+    ctx.restore();
     if (state.combat.isBoss) {
-      this.drawBossWarning(labelOrigin.x, labelOrigin.y + 22);
+      this.drawBossWarning(labelOrigin.x, labelOrigin.y + 26);
     }
 
     const shipBob = Math.sin(this.time * 2.8) * 3;
@@ -223,14 +226,14 @@ export class BattleRenderer {
     this.ctx.closePath();
   }
 
-  private getBattleLabelOrigin(): { x: number; y: number } {
+  private getZoneLabelOrigin(): { x: number; y: number } {
     const canvas = this.ctx.canvas;
     const cssHeight = canvas.clientHeight || this.height;
-    const safeTopPx = Math.min(170, cssHeight * 0.18);
+    const topPx = Math.min(56, cssHeight * 0.1);
 
     return {
-      x: this.getSafeLeftX(),
-      y: Math.max(28, (safeTopPx / cssHeight) * this.height),
+      x: this.width / 2,
+      y: Math.max(26, (topPx / cssHeight) * this.height),
     };
   }
 
@@ -243,7 +246,10 @@ export class BattleRenderer {
   private drawBossWarning(x: number, y: number): void {
     const pulse = 0.45 + Math.sin(this.time * 5) * 0.15;
     this.ctx.save();
+    this.ctx.textAlign = 'center';
     this.ctx.fillStyle = `rgba(255, 92, 122, ${pulse})`;
+    this.ctx.shadowColor = 'rgba(255, 92, 122, 0.9)';
+    this.ctx.shadowBlur = 16;
     this.ctx.font = '700 13px Orbitron, sans-serif';
     this.ctx.fillText('ALERTA DE CHEFE', x, y);
     this.ctx.restore();

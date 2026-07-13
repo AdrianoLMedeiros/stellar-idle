@@ -21,6 +21,7 @@
 ### Alterado
 
 - Layout reorganizado em grade fixa: painel superior (título, menu e recursos), coluna esquerda (nave, status e navegação), área central (canvas de batalha e tripulação) e coluna direita (melhorias e salto quântico), substituindo os painéis flutuantes sobrepostos ao canvas.
+- Nome da zona e alerta de chefe no canvas de batalha centralizados e reposicionados mais próximos do topo, liberando espaço para a cena de combate; nome da zona com fonte maior e alerta de chefe com brilho avermelhado.
 
 ### Corrigido
 

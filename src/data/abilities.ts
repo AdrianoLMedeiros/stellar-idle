@@ -12,6 +12,7 @@ export const OFFICER_ABILITIES: OfficerAbility[] = [
     kind: 'timed_effect',
     value: 0,
     effects: [{ type: 'weapon_speed', value: 0.3 }],
+    hotkey: 'A',
   },
   {
     id: 'vex-focused-burst',
@@ -22,6 +23,7 @@ export const OFFICER_ABILITIES: OfficerAbility[] = [
     cooldown: 28,
     kind: 'instant_damage',
     value: 4,
+    hotkey: 'S',
   },
   {
     id: 'aria-shield-surge',
@@ -32,6 +34,7 @@ export const OFFICER_ABILITIES: OfficerAbility[] = [
     cooldown: 32,
     kind: 'restore_shield',
     value: 0.45,
+    hotkey: 'D',
   },
   {
     id: 'lyra-emergency-repair',
@@ -42,6 +45,7 @@ export const OFFICER_ABILITIES: OfficerAbility[] = [
     cooldown: 40,
     kind: 'repair_hull',
     value: 0.25,
+    hotkey: 'F',
   },
 ];
 

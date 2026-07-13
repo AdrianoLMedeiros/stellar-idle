@@ -4,6 +4,7 @@
 
 ### Adicionado
 
+- Atalhos de teclado para ações táticas (1-4), ordens rápidas (Q/W/E) e especiais dos oficiais (A/S/D/F), com selo visual da tecla em cada botão. Suspensos enquanto qualquer overlay estiver aberto e respeitam o cooldown de cada ação.
 - Escalonamento por ciclo: ao completar as 4 zonas e retornar para a primeira, inimigos ficam mais fortes (HP e ataque) e as recompensas de créditos/XP aumentam, mantendo o Salto Quântico relevante em vez de repetir o mesmo desafio indefinidamente. O ciclo atual aparece no painel de Navegação.
 - Ações táticas acionáveis durante o combate: reparo, barreira, sobrecarga e varredura.
 - Cooldowns e efeitos temporários persistidos no save local.

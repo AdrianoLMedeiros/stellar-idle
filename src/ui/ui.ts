@@ -626,10 +626,11 @@ export class UIManager {
   private updateAreaProgress(state: GameState): void {
     const waveInArea = ((state.combat.wave - 1) % WAVES_PER_AREA) + 1;
     const areaProgress = Math.min(100, (waveInArea / WAVES_PER_AREA) * 100);
+    const cycleSuffix = ` · Ciclo ${state.combat.cycle + 1}`;
 
     this.areaProgressLabel.textContent = state.combat.isBoss
-      ? `BOSS ${waveInArea} / ${WAVES_PER_AREA}`
-      : `Onda ${waveInArea} / ${WAVES_PER_AREA}`;
+      ? `BOSS ${waveInArea} / ${WAVES_PER_AREA}${cycleSuffix}`
+      : `Onda ${waveInArea} / ${WAVES_PER_AREA}${cycleSuffix}`;
     this.areaProgressFill.style.width = `${areaProgress}%`;
     this.areaProgressFill.classList.toggle('boss-alert', state.combat.isBoss);
 

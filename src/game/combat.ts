@@ -172,7 +172,7 @@ function resolveShipRetreat(state: GameState): number {
   state.ship.hull = Math.max(1, Math.floor(state.ship.maxHull * 0.55));
   state.ship.shield = Math.floor(state.ship.maxShield * 0.35);
   state.ship.weaponTimer = 0;
-  state.combat = createEnemyForWave(state.combat.zoneId, state.combat.wave);
+  state.combat = createEnemyForWave(state.combat.zoneId, state.combat.wave, state.combat.cycle);
   return 1;
 }
 
@@ -181,16 +181,16 @@ function advanceCombatAfterVictory(state: GameState): void {
   const bossEvery = 10;
 
   if (nextWave > bossEvery && state.combat.zoneId < 4) {
-    state.combat = createEnemyForWave(state.combat.zoneId + 1, 1);
+    state.combat = createEnemyForWave(state.combat.zoneId + 1, 1, state.combat.cycle);
     return;
   }
 
   if (nextWave > bossEvery * 2 && state.combat.zoneId === 4) {
-    state.combat = createEnemyForWave(1, 1);
+    state.combat = createEnemyForWave(1, 1, state.combat.cycle + 1);
     return;
   }
 
-  state.combat = createEnemyForWave(state.combat.zoneId, nextWave);
+  state.combat = createEnemyForWave(state.combat.zoneId, nextWave, state.combat.cycle);
 }
 
 export function applyOfflineProgress(state: GameState, elapsedSeconds: number): number {

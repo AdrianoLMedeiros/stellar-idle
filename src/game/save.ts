@@ -9,7 +9,7 @@ import type { GameState } from './types';
 
 const SAVE_KEY = 'stellar-idle-rpg-save-v1';
 const SAVE_SCHEMA = 'stellar-idle-rpg-save';
-export const SAVE_VERSION = 5;
+export const SAVE_VERSION = 6;
 export const APP_VERSION = '0.1.0-alpha.1';
 
 interface SaveEnvelope {
@@ -52,10 +52,11 @@ function isSaveEnvelope(value: Partial<GameState> | Partial<SaveEnvelope>): valu
 }
 
 function normalizeSave(state: GameState): GameState {
-  const combat = state.combat.isBoss === undefined
-    ? createEnemyForWave(state.combat.zoneId, state.combat.wave)
+  const needsCombatRecreate = state.combat.isBoss === undefined || state.combat.cycle === undefined;
+  const combat = needsCombatRecreate
+    ? createEnemyForWave(state.combat.zoneId, state.combat.wave, state.combat.cycle ?? 0)
     : state.combat;
-  if (state.combat.isBoss === undefined) {
+  if (needsCombatRecreate) {
     const hpRatio = state.combat.enemyHp / Math.max(1, state.combat.enemyMaxHp);
     combat.enemyHp = Math.max(1, Math.floor(combat.enemyMaxHp * hpRatio));
   }

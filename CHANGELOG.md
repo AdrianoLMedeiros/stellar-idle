@@ -4,6 +4,7 @@
 
 ### Adicionado
 
+- Escalonamento por ciclo: ao completar as 4 zonas e retornar para a primeira, inimigos ficam mais fortes (HP e ataque) e as recompensas de créditos/XP aumentam, mantendo o Salto Quântico relevante em vez de repetir o mesmo desafio indefinidamente. O ciclo atual aparece no painel de Navegação.
 - Ações táticas acionáveis durante o combate: reparo, barreira, sobrecarga e varredura.
 - Cooldowns e efeitos temporários persistidos no save local.
 - Passadiço operacional com efeitos ativos e prontidão de oficiais/ações táticas.

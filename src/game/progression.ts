@@ -3,7 +3,7 @@ import { getUpgradeTemplate } from '../data/upgrades';
 import { getZone } from '../data/zones';
 import { getPremiumMultiplier } from './monetization';
 import { getOperationalFocusMultiplier } from './operationalFocus';
-import { BASE_SHIP_HULL, BASE_SHIP_SHIELD, getPrestigeMultiplier } from './state';
+import { BASE_SHIP_HULL, BASE_SHIP_SHIELD, getCycleRewardMultiplier, getPrestigeMultiplier } from './state';
 import { getTacticalEffectMultiplier } from './tacticalActions';
 import { getTacticalOrderMultiplier } from './tacticalOrders';
 import type { GameState } from './types';
@@ -90,13 +90,14 @@ export function getCreditReward(state: GameState): number {
   const prestige = getPrestigeMultiplier(state);
   const waveBonus = 1 + (state.combat.wave - 1) * 0.05;
   const bossBonus = state.combat.isBoss ? 3 : 1;
+  const cycleMultiplier = getCycleRewardMultiplier(state);
   const skillMultiplier = getSkillEffectMultiplier(state, 'credit_gain');
   const premiumMultiplier = getPremiumMultiplier(state, 'credit_gain');
   const tacticalMultiplier = getTacticalEffectMultiplier(state, 'credit_gain');
   const focusMultiplier = getOperationalFocusMultiplier(state, 'credit_gain');
   return Math.floor(
-    12 * zone.creditMultiplier * scannerBonus * prestige * waveBonus * bossBonus * skillMultiplier * premiumMultiplier
-      * tacticalMultiplier * focusMultiplier,
+    12 * zone.creditMultiplier * scannerBonus * prestige * waveBonus * bossBonus * cycleMultiplier * skillMultiplier
+      * premiumMultiplier * tacticalMultiplier * focusMultiplier,
   );
 }
 
@@ -105,12 +106,14 @@ export function getXpReward(state: GameState): number {
   const trainingBonus = 1 + getUpgradeTemplate('training').effectPerLevel * trainingLevel;
   const prestige = getPrestigeMultiplier(state);
   const bossBonus = state.combat.isBoss ? 3 : 1;
+  const cycleMultiplier = getCycleRewardMultiplier(state);
   const skillMultiplier = getSkillEffectMultiplier(state, 'xp_gain');
   const premiumMultiplier = getPremiumMultiplier(state, 'xp_gain');
   const tacticalMultiplier = getTacticalEffectMultiplier(state, 'xp_gain');
   const focusMultiplier = getOperationalFocusMultiplier(state, 'xp_gain');
   const rawReward =
-    8 * trainingBonus * prestige * bossBonus * skillMultiplier * premiumMultiplier * tacticalMultiplier * focusMultiplier;
+    8 * trainingBonus * prestige * bossBonus * cycleMultiplier * skillMultiplier * premiumMultiplier * tacticalMultiplier
+      * focusMultiplier;
   return Math.ceil(rawReward);
 }
 

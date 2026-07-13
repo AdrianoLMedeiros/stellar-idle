@@ -251,6 +251,7 @@ export interface PremiumState {
 export interface CombatState {
   zoneId: number;
   wave: number;
+  cycle: number;
   enemyIndex: number;
   enemyHp: number;
   enemyMaxHp: number;

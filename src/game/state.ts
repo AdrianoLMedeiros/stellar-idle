@@ -11,6 +11,10 @@ const BASE_ENEMY_ATK = 5;
 const BOSS_EVERY_WAVES = 10;
 const BOSS_HP_MULTIPLIER = 4.5;
 const BOSS_ATK_MULTIPLIER = 2.25;
+// Applied once per full loop through all zones (see advanceCombatAfterVictory), so
+// grinding past a prestige reset keeps escalating instead of repeating zone 1-4 flat.
+const CYCLE_DIFFICULTY_GROWTH = 1.85;
+const CYCLE_REWARD_GROWTH = 1.5;
 
 export const BASE_SHIP_HULL = 180;
 export const BASE_SHIP_SHIELD = 90;
@@ -43,20 +47,22 @@ export function createInitialShip() {
   };
 }
 
-export function createEnemyForWave(zoneId: number, wave: number): CombatState {
+export function createEnemyForWave(zoneId: number, wave: number, cycle = 0): CombatState {
   const zone = getZone(zoneId);
   const enemyIndex = (wave - 1) % zone.enemies.length;
   const isBoss = wave % BOSS_EVERY_WAVES === 0;
   const enemy = isBoss ? zone.boss : zone.enemies[enemyIndex];
   const bossScale = isBoss ? BOSS_HP_MULTIPLIER : 1;
-  const hpScale = zone.enemyHpMultiplier * Math.pow(1.12, wave - 1) * bossScale;
+  const cycleScale = Math.pow(CYCLE_DIFFICULTY_GROWTH, cycle);
+  const hpScale = zone.enemyHpMultiplier * Math.pow(1.12, wave - 1) * bossScale * cycleScale;
   const maxHp = Math.floor(BASE_ENEMY_HP * hpScale);
-  const atkScale = zone.enemyHpMultiplier * Math.pow(1.08, wave - 1) * (isBoss ? BOSS_ATK_MULTIPLIER : 1);
+  const atkScale = zone.enemyHpMultiplier * Math.pow(1.08, wave - 1) * (isBoss ? BOSS_ATK_MULTIPLIER : 1) * cycleScale;
   const enemyAtk = Math.floor(BASE_ENEMY_ATK * atkScale);
 
   return {
     zoneId,
     wave,
+    cycle,
     enemyIndex,
     enemyHp: maxHp,
     enemyMaxHp: maxHp,
@@ -74,7 +80,7 @@ export function createEnemyForWave(zoneId: number, wave: number): CombatState {
 export function createInitialState(): GameState {
   const now = Date.now();
   return {
-    saveVersion: 5,
+    saveVersion: 6,
     credits: 0,
     quantumCrystals: 0,
     prestigeCount: 0,
@@ -99,11 +105,16 @@ export function getPrestigeMultiplier(state: GameState): number {
   return 1 + state.quantumCrystals * 0.05;
 }
 
+export function getCycleRewardMultiplier(state: GameState): number {
+  return Math.pow(CYCLE_REWARD_GROWTH, state.combat.cycle);
+}
+
 export function estimatePrestigeGain(state: GameState): number {
   const zoneBonus = state.combat.zoneId * 2;
   const waveBonus = Math.floor(state.combat.wave / 5);
   const defeatBonus = Math.floor(state.totalEnemiesDefeated / 25);
-  return Math.max(1, zoneBonus + waveBonus + defeatBonus);
+  const cycleBonus = state.combat.cycle * 12;
+  return Math.max(1, zoneBonus + waveBonus + defeatBonus + cycleBonus);
 }
 
 export function canPrestige(state: GameState): boolean {

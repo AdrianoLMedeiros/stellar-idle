@@ -800,6 +800,14 @@ body {
   box-shadow: 0 0 6px rgba(4, 16, 24, 0.4);
 }
 
+.tactical-action-btn.cooling-down .hotkey-badge,
+.tactical-order-btn.cooling-down .hotkey-badge,
+.hero-ability-btn.cooling-down .hotkey-badge {
+  background: rgba(122, 155, 184, 0.35);
+  color: rgba(4, 16, 24, 0.6);
+  box-shadow: none;
+}
+
 .hero-info-btn.has-upgrade {
   color: #041018;
   background: linear-gradient(135deg, var(--gold), var(--success));

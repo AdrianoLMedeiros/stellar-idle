@@ -12,6 +12,7 @@ export const TACTICAL_ORDERS: TacticalOrder[] = [
     impactLabel: '+45% dano',
     impactColor: '#ffd166',
     effects: [{ type: 'weapon_damage', value: 0.45 }],
+    hotkey: 'Q',
   },
   {
     id: 'forward-shields',
@@ -24,6 +25,7 @@ export const TACTICAL_ORDERS: TacticalOrder[] = [
     impactLabel: '-45% dano recebido',
     impactColor: '#5cffb1',
     effects: [{ type: 'incoming_damage_reduction', value: 0.45 }],
+    hotkey: 'W',
   },
   {
     id: 'evasive-maneuver',
@@ -36,6 +38,7 @@ export const TACTICAL_ORDERS: TacticalOrder[] = [
     impactLabel: 'Próximo ataque evitado',
     impactColor: '#8ef9ff',
     effects: [{ type: 'evasion', value: 1 }],
+    hotkey: 'E',
   },
 ];
 

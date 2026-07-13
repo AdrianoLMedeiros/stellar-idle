@@ -41,6 +41,7 @@ export interface OfficerAbility {
   kind: OfficerAbilityKind;
   value: number;
   effects?: AbilityEffect[];
+  hotkey: string;
 }
 
 export interface ActiveAbilityEffect {
@@ -70,6 +71,7 @@ export interface TacticalAction {
   kind: TacticalActionKind;
   value: number;
   effects?: TacticalEffect[];
+  hotkey: string;
 }
 
 export interface TacticalActionState {
@@ -102,6 +104,7 @@ export interface TacticalOrder {
   impactLabel: string;
   impactColor: string;
   effects: TacticalOrderEffect[];
+  hotkey: string;
 }
 
 export interface TacticalOrderState {

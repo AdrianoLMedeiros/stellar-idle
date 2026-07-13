@@ -421,10 +421,31 @@ body {
 }
 
 .tactical-action-btn {
+  position: relative;
   min-height: 30px;
   padding: 7px 8px;
   font-size: 0.66rem;
   overflow-wrap: break-word;
+}
+
+.hotkey-badge {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 3px;
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  background: rgba(255, 209, 102, 0.92);
+  color: #041018;
+  font-family: var(--font-display);
+  font-size: 0.56rem;
+  font-weight: 700;
+  box-shadow: 0 0 8px rgba(255, 209, 102, 0.45);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .tactical-action-btn.cooling-down {
@@ -438,6 +459,7 @@ body {
 }
 
 .tactical-order-btn {
+  position: relative;
   display: grid;
   gap: 2px;
   min-width: 0;
@@ -481,6 +503,13 @@ body {
 .tactical-order-btn span {
   color: var(--muted);
   font-size: 0.58rem;
+}
+
+.tactical-order-btn .hotkey-badge {
+  min-width: 15px;
+  overflow: visible;
+  color: #041018;
+  font-size: 0.56rem;
 }
 
 .tactical-order-btn.active {
@@ -763,6 +792,12 @@ body {
   color: var(--muted);
   background: rgba(61, 232, 255, 0.08);
   border-color: rgba(61, 232, 255, 0.18);
+}
+
+.hero-ability-btn .hotkey-badge {
+  background: rgba(4, 16, 24, 0.88);
+  color: var(--gold);
+  box-shadow: 0 0 6px rgba(4, 16, 24, 0.4);
 }
 
 .hero-info-btn.has-upgrade {

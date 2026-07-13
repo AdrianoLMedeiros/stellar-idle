@@ -9,6 +9,7 @@ export const TACTICAL_ACTIONS: TacticalAction[] = [
     cooldown: 34,
     kind: 'repair_hull',
     value: 0.18,
+    hotkey: '1',
   },
   {
     id: 'shield-barrier',
@@ -18,6 +19,7 @@ export const TACTICAL_ACTIONS: TacticalAction[] = [
     cooldown: 28,
     kind: 'restore_shield',
     value: 0.3,
+    hotkey: '2',
   },
   {
     id: 'weapon-overcharge',
@@ -29,6 +31,7 @@ export const TACTICAL_ACTIONS: TacticalAction[] = [
     kind: 'timed_effect',
     value: 0,
     effects: [{ type: 'weapon_damage', value: 0.35 }],
+    hotkey: '3',
   },
   {
     id: 'tactical-scan',
@@ -43,6 +46,7 @@ export const TACTICAL_ACTIONS: TacticalAction[] = [
       { type: 'credit_gain', value: 0.35 },
       { type: 'xp_gain', value: 0.35 },
     ],
+    hotkey: '4',
   },
 ];
 

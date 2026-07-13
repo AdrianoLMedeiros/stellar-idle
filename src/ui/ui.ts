@@ -152,6 +152,7 @@ export class UIManager {
   private currentState: GameState | null = null;
   private selectedHeroId: string | null = null;
   private heroOverlayRenderKey = '';
+  private readonly hotkeyButtons = new Map<string, HTMLButtonElement>();
 
   constructor(
     private onUpgrade: (id: string) => void,
@@ -194,11 +195,14 @@ export class UIManager {
       if (skillId) this.onUnlockSkill(this.selectedHeroId, skillId);
     });
     window.addEventListener('keydown', (event) => {
-      if (event.key !== 'Escape') return;
-      this.closeHeroOverlay();
-      this.closeBridgeOverlay();
-      this.closeStoreOverlay();
-      this.closeCommandOverlay();
+      if (event.key === 'Escape') {
+        this.closeHeroOverlay();
+        this.closeBridgeOverlay();
+        this.closeStoreOverlay();
+        this.closeCommandOverlay();
+        return;
+      }
+      this.handleHotkey(event);
     });
     this.saveBtn.addEventListener('click', () => this.onSave());
     this.exportSaveBtn.addEventListener('click', () => this.onExportSave());
@@ -212,6 +216,38 @@ export class UIManager {
     this.buildZoneRoute();
     this.buildStoreList();
     this.buildBridgeStations();
+    this.registerHotkeys();
+  }
+
+  private registerHotkeys(): void {
+    for (const action of TACTICAL_ACTIONS) {
+      const btn = this.tacticalActionList.querySelector<HTMLButtonElement>(`[data-tactical-action="${action.id}"]`);
+      if (btn) this.hotkeyButtons.set(action.hotkey.toUpperCase(), btn);
+    }
+    for (const order of TACTICAL_ORDERS) {
+      const btn = this.tacticalOrderList.querySelector<HTMLButtonElement>(`[data-tactical-order="${order.id}"]`);
+      if (btn) this.hotkeyButtons.set(order.hotkey.toUpperCase(), btn);
+    }
+    for (const hero of HERO_TEMPLATES) {
+      const btn = this.crewList.querySelector<HTMLButtonElement>(`[data-hero-ability="${hero.id}"]`);
+      if (btn) this.hotkeyButtons.set(getOfficerAbility(hero.id).hotkey.toUpperCase(), btn);
+    }
+  }
+
+  private handleHotkey(event: KeyboardEvent): void {
+    if (event.repeat || event.metaKey || event.ctrlKey || event.altKey) return;
+    if (this.isAnyOverlayOpen()) return;
+    const btn = this.hotkeyButtons.get(event.key.toUpperCase());
+    if (!btn) return;
+    event.preventDefault();
+    btn.click();
+  }
+
+  private isAnyOverlayOpen(): boolean {
+    return !this.bridgeOverlay.classList.contains('hidden')
+      || !this.storeOverlay.classList.contains('hidden')
+      || !this.commandOverlay.classList.contains('hidden')
+      || !this.heroOverlay.classList.contains('hidden');
   }
 
   private buildStaticLists(): void {
@@ -234,7 +270,8 @@ export class UIManager {
             <span class="muted">Posto</span>
             <strong data-hero-station="${hero.id}">${CREW_STATIONS[hero.id] ?? hero.roleLabel}</strong>
             <button class="btn secondary hero-ability-btn" data-hero-ability="${hero.id}">
-              ${getOfficerAbility(hero.id).shortName}
+              <span class="hotkey-badge">${getOfficerAbility(hero.id).hotkey}</span>
+              <span data-hero-ability-label="${hero.id}">${getOfficerAbility(hero.id).shortName}</span>
             </button>
             <button class="btn secondary hero-info-btn" data-hero-open="${hero.id}">Info</button>
           </div>
@@ -293,8 +330,9 @@ export class UIManager {
 
   private buildTacticalActions(): void {
     this.tacticalActionList.innerHTML = TACTICAL_ACTIONS.map((action) => `
-      <button class="btn secondary tactical-action-btn" data-tactical-action="${action.id}" title="${action.description}">
-        ${action.shortName}
+      <button class="btn secondary tactical-action-btn" data-tactical-action="${action.id}" title="${action.description} (tecla ${action.hotkey})">
+        <span class="hotkey-badge">${action.hotkey}</span>
+        <span data-tactical-action-label="${action.id}">${action.shortName}</span>
       </button>
     `).join('');
 
@@ -308,7 +346,8 @@ export class UIManager {
 
   private buildTacticalOrders(): void {
     this.tacticalOrderList.innerHTML = TACTICAL_ORDERS.map((order) => `
-      <button class="tactical-order-btn" data-tactical-order="${order.id}" title="${order.description}">
+      <button class="tactical-order-btn" data-tactical-order="${order.id}" title="${order.description} (tecla ${order.hotkey})">
+        <span class="hotkey-badge">${order.hotkey}</span>
         <strong data-tactical-order-label="${order.id}">${order.shortName}</strong>
         <span data-tactical-order-meta="${order.id}">${order.duration}s</span>
       </button>
@@ -450,12 +489,13 @@ export class UIManager {
       }
       if (abilityBtn) {
         const cooldown = Math.ceil(hero.abilityCooldown ?? 0);
+        const abilityLabel = abilityBtn.querySelector<HTMLElement>(`[data-hero-ability-label="${hero.id}"]`);
         abilityBtn.disabled = cooldown > 0;
         abilityBtn.classList.toggle('cooling-down', cooldown > 0);
-        abilityBtn.textContent = cooldown > 0 ? `${cooldown}s` : ability.shortName;
+        if (abilityLabel) abilityLabel.textContent = cooldown > 0 ? `${cooldown}s` : ability.shortName;
         abilityBtn.title = cooldown > 0
           ? `${ability.name} recarregando.`
-          : `${ability.name}: ${ability.description}`;
+          : `${ability.name}: ${ability.description} (tecla ${ability.hotkey})`;
       }
     }
 
@@ -465,13 +505,16 @@ export class UIManager {
         `[data-tactical-action="${actionState.id}"]`,
       );
       if (!btn) continue;
+      const label = this.tacticalActionList.querySelector<HTMLElement>(
+        `[data-tactical-action-label="${actionState.id}"]`,
+      );
       const cooldown = Math.ceil(actionState.cooldown);
       btn.disabled = cooldown > 0;
       btn.classList.toggle('cooling-down', cooldown > 0);
-      btn.textContent = cooldown > 0 ? `${cooldown}s` : action.shortName;
+      if (label) label.textContent = cooldown > 0 ? `${cooldown}s` : action.shortName;
       btn.title = cooldown > 0
         ? `${action.name} recarregando.`
-        : `${action.name}: ${action.description}`;
+        : `${action.name}: ${action.description} (tecla ${action.hotkey})`;
     }
 
     for (const orderState of state.tacticalOrders) {
@@ -500,7 +543,7 @@ export class UIManager {
       }
       btn.title = cooldown > 0
         ? `${order.name} recarregando.`
-        : `${order.name}: ${order.description}`;
+        : `${order.name}: ${order.description} (tecla ${order.hotkey})`;
     }
 
     let affordableUpgradeCount = 0;
